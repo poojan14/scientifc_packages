@@ -1,0 +1,2082 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scientific Python packages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Source+Sans+3:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap">
+<script>try{var t=JSON.parse(localStorage.getItem("scp:theme"));if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>:root{
+  --paper:#ffffff; --ink:#1d2125; --muted:#5d6570; --rule:#e1e4e8; --wash:#f6f7f8;
+  --accent:#2f5d3a; --accent-wash:#edf3ee; --alert:#9b2c2c; --hl:#fff4cc;
+  --serif:"Source Serif 4","Source Serif Pro",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#16191c; --ink:#e6e8ea; --muted:#a2a9b1; --rule:#30353b; --wash:#1f2327;
+    --accent:#8cc49a; --accent-wash:#1f2b22; --alert:#e58a8a; --hl:#3a3420; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#16191c; --ink:#e6e8ea; --muted:#a2a9b1; --rule:#30353b; --wash:#1f2327;
+  --accent:#8cc49a; --accent-wash:#1f2b22; --alert:#e58a8a; --hl:#3a3420; color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.65 var(--serif);-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+code,pre,kbd{font-family:var(--mono);font-size:.86em}
+:not(pre)>code{background:var(--wash);border:1px solid var(--rule);border-radius:4px;padding:.05em .3em;white-space:nowrap}
+h1,h2,h3{font-family:var(--serif);line-height:1.25;font-weight:600}
+h1{font-size:2.05rem;margin:.2rem 0 1rem;letter-spacing:-.01em}
+h1.hero{font-size:clamp(2.2rem,5.5vw,3.3rem);font-weight:500;letter-spacing:-.02em;margin-bottom:.8rem}
+h2{font-size:1.35rem;margin:2.4rem 0 .6rem}
+h3{font-size:1.08rem;margin:0 0 .3rem}
+p{margin:0 0 1rem}
+dfn{font-style:normal;font-weight:600}
+var{font-style:italic}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:.8rem;padding:.55rem 1rem;font-family:var(--sans)}
+.bar .title{flex:1;min-width:0;font-weight:600;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .title small{font-weight:400;color:var(--muted);margin-left:.5rem}
+.iconbtn{font:inherit;font-size:.92rem;background:none;border:1px solid var(--rule);color:var(--ink);border-radius:6px;padding:.3rem .7rem;cursor:pointer}
+.iconbtn:hover{background:var(--wash)}
+.progress{height:2px;background:var(--rule);position:sticky;top:calc(env(safe-area-inset-top,0px) + 49px);z-index:19}
+.progress span{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+/* drawer */
+.drawer{position:fixed;inset:0;z-index:40;display:none}
+.drawer.open{display:block}
+.drawer .scrim{position:absolute;inset:0;background:rgba(20,24,28,.35)}
+.drawer nav{position:absolute;top:0;left:0;bottom:0;width:min(340px,88vw);background:var(--paper);border-right:1px solid var(--rule);overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 1rem) 1rem calc(env(safe-area-inset-bottom,0px) + 1rem);font-family:var(--sans)}
+.drawer h4{margin:1.1rem 0 .3rem;font-size:.82rem;color:var(--muted);font-weight:600}
+.drawer a{display:flex;justify-content:space-between;gap:.5rem;padding:.32rem .5rem;border-radius:5px;text-decoration:none;color:var(--ink);font-size:.95rem}
+.drawer a:hover{background:var(--wash)}
+.drawer a[aria-current="page"]{background:var(--accent-wash);color:var(--accent);font-weight:600}
+.drawer a .tick{color:var(--accent)}
+
+/* page */
+main{max-width:800px;margin:0 auto;padding:2.2rem 1.25rem 2rem}
+.page{display:none}
+.page.active{display:block}
+.kicker{font-family:var(--sans);font-size:.9rem;color:var(--accent);font-weight:600;margin:0}
+.lede{font-size:1.15rem;color:var(--ink);max-width:40em}
+.aside{color:var(--muted);font-size:.95rem}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:1.4rem 0 1rem}
+.btn{font:600 .95rem var(--sans);padding:.55rem 1rem;border-radius:6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer}
+.btn:hover{background:var(--wash)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.btn.primary:hover{filter:brightness(1.08)}
+ol.plan{list-style:none;counter-reset:p;padding:0;margin:0;border-top:1px solid var(--rule)}
+ol.plan li{counter-increment:p;display:grid;grid-template-columns:2.2rem 9rem 1fr;gap:.4rem;padding:.6rem 0;border-bottom:1px solid var(--rule);align-items:baseline}
+ol.plan li::before{content:counter(p);font-family:var(--sans);color:var(--muted);font-size:.9rem}
+ol.plan span{color:var(--muted)}
+@media (max-width:560px){ol.plan li{grid-template-columns:1.6rem 1fr}ol.plan span{grid-column:2}}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;margin:1.2rem 0 1.6rem;font-size:.95rem;display:block;overflow-x:auto}
+.tbl thead,.tbl tbody{display:table;width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-family:var(--sans);font-weight:600;font-size:.88rem;color:var(--muted);border-bottom:1.5px solid var(--ink);padding:.45rem .6rem}
+.tbl td{border-bottom:1px solid var(--rule);padding:.5rem .6rem;vertical-align:top}
+.tbl td:first-child{font-weight:600}
+
+/* code */
+figure.code{margin:1.3rem 0 1.6rem;border:1px solid var(--rule);border-radius:8px;background:var(--wash);overflow:hidden}
+.code-head{display:flex;justify-content:space-between;align-items:center;padding:.35rem .75rem;border-bottom:1px solid var(--rule);font:600 .82rem var(--sans);color:var(--muted)}
+.copy{font:600 .8rem var(--sans);border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:5px;padding:.15rem .55rem;cursor:pointer}
+figure.code pre{margin:0;padding:.85rem 1rem;overflow-x:auto;line-height:1.55;font-size:.86rem}
+figure.code details{border-top:1px solid var(--rule);background:var(--paper)}
+figure.code summary{cursor:pointer;padding:.45rem .9rem;font:600 .86rem var(--sans);color:var(--accent)}
+figure.code details pre{padding:.2rem 1rem .9rem}
+.tok-c{color:var(--muted);font-style:italic}
+.tok-s{color:var(--accent)}
+.tok-k{font-weight:700}
+.tok-n{color:var(--alert)}
+
+/* try-it */
+.try{border:1px solid var(--accent);border-radius:10px;padding:1.1rem 1.1rem 1rem;margin:1.6rem 0 1.8rem;background:var(--paper)}
+.try-head h3{font-family:var(--sans);font-size:1rem;color:var(--accent)}
+.try-head p{color:var(--muted);font-size:.95rem;margin-bottom:.8rem}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem 1.1rem;align-items:center;margin:.4rem 0 .8rem;font-family:var(--sans);font-size:.93rem}
+.controls label{display:flex;align-items:center;gap:.4rem}
+[data-show][hidden]{display:none!important}
+input[type=number],input[type=text],input[type=search],select,textarea{font:inherit;font-size:.93rem;border:1px solid var(--rule);border-radius:5px;padding:.3rem .45rem;background:var(--paper);color:var(--ink)}
+input[type=number]{width:5.2rem}
+textarea{width:100%;font-family:var(--mono);font-size:.85rem;resize:vertical}
+input[type=range]{accent-color:var(--accent);width:9rem}
+output{font-family:var(--mono);font-size:.85rem;min-width:2.5rem}
+label.stack{display:flex;flex-direction:column;gap:.25rem;font:600 .9rem var(--sans)}
+label.check{display:inline-flex;gap:.4rem;align-items:center;font-family:var(--sans);font-size:.93rem;margin:.2rem 0 .6rem}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);border-radius:7px;overflow:hidden;margin:.2rem 0 .6rem}
+.seg button{font:600 .88rem var(--sans);border:0;border-right:1px solid var(--rule);background:var(--paper);color:var(--ink);padding:.4rem .75rem;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:var(--paper)}
+.label{font:600 .82rem var(--sans);color:var(--muted);margin:.4rem 0 .25rem}
+pre.out,pre.codeline{margin:.3rem 0 .6rem;padding:.6rem .8rem;border-radius:6px;overflow-x:auto;font-size:.86rem;line-height:1.5;white-space:pre}
+pre.codeline{background:var(--wash);border:1px solid var(--rule)}
+pre.out{background:var(--accent-wash)}
+pre.out.err{background:transparent;border:1px solid var(--alert);color:var(--alert)}
+.note{font-size:.95rem;color:var(--muted);margin:.4rem 0 0}
+.split2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media (max-width:620px){.split2{grid-template-columns:1fr}}
+svg.chart{width:100%;height:auto;display:block;margin:.4rem 0 .6rem;font-family:var(--sans)}
+
+/* widgets */
+.cells{display:flex;flex-wrap:wrap;gap:4px;margin:.6rem 0}
+.cell{min-width:3.1rem;text-align:center;border:1px solid var(--rule);border-radius:5px;padding:.3rem .2rem;font-family:var(--mono);font-size:.9rem;background:var(--paper)}
+.cell small{display:block;font-size:.68rem;color:var(--muted)}
+.cell.sel{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.cell.sel small{color:var(--paper);opacity:.8}
+.bc{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;margin:.6rem 0;font-family:var(--mono)}
+.grid{display:inline-grid;gap:3px}
+.grid div{width:2.7rem;height:2.1rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--rule);border-radius:4px;font-size:.88rem;background:var(--paper)}
+.grid div.ghost{color:var(--muted);border-style:dashed;background:transparent}
+.grid div.res{background:var(--accent-wash)}
+.bc .sym{font-size:1.2rem;color:var(--muted)}
+.axisgrid{display:grid;gap:3px;margin:.6rem 0;font-family:var(--mono);font-size:.9rem;width:max-content;max-width:100%;overflow-x:auto}
+.axisgrid div{padding:.35rem .6rem;text-align:right;border-radius:4px}
+.axisgrid .v{border:1px solid var(--rule)}
+.axisgrid .h{font:600 .8rem var(--sans);color:var(--muted);text-align:center;border:0}
+.axisgrid .r{background:var(--accent);color:var(--paper);font-weight:700}
+.axisgrid .v.in{background:var(--accent-wash)}
+.tablewrap{overflow-x:auto;margin:.4rem 0}
+.dft{border-collapse:collapse;font-family:var(--mono);font-size:.85rem}
+.dft th,.dft td{padding:.3rem .7rem;border-bottom:1px solid var(--rule);text-align:right}
+.dft th{font-family:var(--sans);font-weight:600;color:var(--muted)}
+.dft tr.sel td{background:var(--accent-wash)}
+.dft tr.dim td{color:var(--muted);opacity:.55}
+.eqs{display:grid;gap:.4rem;font-family:var(--mono);font-size:.9rem;margin:.5rem 0}
+.eqs .row{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.eqs input{width:3.6rem;text-align:right}
+.symtbl td:first-child{font-family:var(--mono);font-weight:400;white-space:nowrap}
+.symtbl td:last-child{font-family:var(--mono)}
+.graphbox{display:grid;grid-template-columns:1fr 13rem;gap:1rem;align-items:start}
+@media (max-width:640px){.graphbox{grid-template-columns:1fr}}
+.weights{display:grid;grid-template-columns:auto auto;gap:.35rem .6rem;font-family:var(--mono);font-size:.88rem;align-items:center}
+.weights input{width:4.2rem}
+.h5{display:grid;grid-template-columns:15rem 1fr;gap:1rem}
+@media (max-width:640px){.h5{grid-template-columns:1fr}}
+.tree button{display:block;width:100%;text-align:left;font:.9rem var(--mono);background:none;border:0;border-radius:5px;padding:.3rem .5rem;color:var(--ink);cursor:pointer;white-space:nowrap}
+.tree button:hover{background:var(--wash)}
+.tree button[aria-selected="true"]{background:var(--accent-wash);color:var(--accent);font-weight:700}
+.tree .kind{font-family:var(--sans);font-size:.75rem;color:var(--muted);margin-left:.4rem}
+.h5info{border-left:1px solid var(--rule);padding-left:1rem;font-size:.95rem}
+@media (max-width:640px){.h5info{border-left:0;padding-left:0;border-top:1px solid var(--rule);padding-top:.8rem}}
+
+/* tasks, quiz, errors */
+.task{border-top:1px solid var(--rule);padding:1rem 0 .4rem}
+details.sol>summary{cursor:pointer;font:600 .92rem var(--sans);color:var(--accent);margin:.2rem 0}
+.search{width:100%;margin:.4rem 0 .8rem}
+.errors details{border-bottom:1px solid var(--rule);padding:.5rem 0}
+.errors summary{cursor:pointer;font-size:.97rem}
+.errors summary code{white-space:normal}
+.errors details p{margin:.5rem 0 .2rem;color:var(--muted)}
+.q{border-top:1px solid var(--rule);padding:1rem 0}
+.q p.qt{font-weight:600;margin-bottom:.5rem}
+.q .opts{display:grid;gap:.35rem}
+.q .opts button{text-align:left;font:.95rem var(--sans);border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);padding:.5rem .7rem;cursor:pointer}
+.q .opts button:hover:not(:disabled){background:var(--wash)}
+.q .opts button.right{border-color:var(--accent);background:var(--accent-wash)}
+.q .opts button.wrong{border-color:var(--alert);color:var(--alert)}
+.q .opts button:disabled{cursor:default}
+.q .why{font-size:.93rem;color:var(--muted);margin:.5rem 0 0}
+.score{font:600 1rem var(--sans)}
+
+/* footer nav */
+.pager{max-width:800px;margin:0 auto;padding:1rem 1.25rem 3rem;display:flex;justify-content:space-between;gap:1rem;align-items:center;font-family:var(--sans);border-top:1px solid var(--rule)}
+.pager button{font:inherit;background:none;border:0;color:var(--accent);cursor:pointer;text-align:left;padding:.3rem 0;max-width:45%}
+.pager button:last-child{text-align:right}
+.pager button small{display:block;color:var(--muted);font-size:.8rem}
+.pager button:disabled{visibility:hidden}
+.pager .done{font:600 .88rem;text-align:center;max-width:none var(--sans);border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);padding:.4rem .8rem;cursor:pointer;white-space:nowrap}
+.pager .done[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-wash)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+h1 code{font-size:.8em;background:none;border:0;padding:0}
+</style>
+</head>
+<body>
+<header class="bar">
+  <button class="iconbtn" type="button" data-open-contents aria-label="Open contents">☰ Contents</button>
+  <div class="title">Scientific Python packages<small id="bar-sub"></small></div>
+  <button class="iconbtn" type="button" id="theme" aria-label="Switch light or dark theme">◐</button>
+</header>
+<div class="progress"><span id="prog"></span></div>
+<div class="drawer" id="drawer"><div class="scrim"></div><nav id="contents-nav" aria-label="Contents"></nav></div>
+<main>
+<!-- ================= HOME ================= -->
+<section class="page" data-group="Start" data-title="Overview" id="home">
+  <p class="kicker">Scientific Computing using Python</p>
+  <h1 class="hero">Scientific Python packages</h1>
+  <p class="lede">Arrays with NumPy, data structures and formats with Pandas, and scientific functions with SciPy, statsmodels, SymPy, NetworkX and PyTables. Each section pairs short notes with code you can copy and a live model you can change.</p>
+  <div class="actions">
+    <button class="btn primary" data-go="np-intro">Start with NumPy</button>
+    <button class="btn" data-open-contents>Browse all sections</button>
+  </div>
+  <h2>Plan for this unit</h2>
+  <ol class="plan">
+    <li><strong>NumPy</strong><span>ndarray, indexing, reshaping, broadcasting, aggregation</span></li>
+    <li><strong>Pandas</strong><span>Series and DataFrame, selection, grouping, missing data, file formats</span></li>
+    <li><strong>SciPy</strong><span>distributions, hypothesis tests, linear algebra, integration, FFT</span></li>
+    <li><strong>statsmodels</strong><span>OLS regression and ARIMA forecasting</span></li>
+    <li><strong>SymPy</strong><span>exact algebra, equation solving and calculus</span></li>
+    <li><strong>NetworkX</strong><span>graphs, shortest paths and centrality</span></li>
+    <li><strong>PyTables</strong><span>hierarchical HDF5 storage for large data</span></li>
+    <li><strong>Wrap-up</strong><span>which package when, common errors, exit quiz</span></li>
+  </ol>
+  <h2>Before the lab</h2>
+  <p>Install the packages once, in a terminal or a Colab cell (prefix with <code>!</code> in Colab):</p>
+  <figure class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre><code class="sh">pip install numpy pandas scipy statsmodels sympy networkx tables openpyxl</code></pre></figure>
+  <p class="aside">Outputs on this site were produced with NumPy 2.4, Pandas 2.3, SciPy 1.17, statsmodels 0.15, SymPy 1.14, NetworkX 3.6 and PyTables 3.11. Older versions may print numbers with slightly different spacing.</p>
+  <p class="aside">Move between sections with the ← and → keys, the buttons at the bottom, or Contents. Sections you mark as done and quiz answers are remembered in this browser.</p>
+</section>
+
+<!-- ================= NUMPY ================= -->
+<section class="page" data-group="NumPy" data-title="What is NumPy?" id="np-intro">
+  <p class="kicker">NumPy</p>
+  <h1>What is NumPy?</h1>
+  <p>NumPy (Numerical Python) provides the <dfn>ndarray</dfn>, an n-dimensional array in which every element has the same data type. Operations on whole arrays run in compiled C code, so they are much faster than Python loops. Pandas, SciPy, statsmodels and PyTables are all built on top of it.</p>
+  <div class="try" id="w-listarr">
+    <div class="try-head"><h3>Try it: list or array?</h3><p>The same operator means different things for a list and an array.</p></div>
+    <div class="seg" role="group" aria-label="Operation">
+      <button type="button" data-op="mul" class="on">x * 2</button>
+      <button type="button" data-op="add">x + [10, 20, 30]</button>
+      <button type="button" data-op="pow">x ** 2</button>
+    </div>
+    <div class="split2">
+      <div><p class="label">Python list</p><pre class="out" data-k="list"></pre></div>
+      <div><p class="label">NumPy array</p><pre class="out" data-k="arr"></pre></div>
+    </div>
+    <p class="note" data-k="note"></p>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>Python list</th><th>NumPy array</th></tr></thead>
+    <tbody>
+      <tr><td>Can mix data types</td><td>One data type for all elements</td></tr>
+      <tr><td>Maths needs a loop</td><td>Vectorised, element-wise maths</td></tr>
+      <tr><td>More memory per element</td><td>Compact, contiguous memory</td></tr>
+      <tr><td>No numerical methods</td><td><code>sum</code>, <code>mean</code>, <code>std</code>, <code>dot</code>, <code>reshape</code> and more</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="page" data-group="NumPy" data-title="Creating arrays" id="np-create">
+  <p class="kicker">NumPy</p>
+  <h1>Creating arrays and reading their attributes</h1>
+  <p>Arrays are created from lists with <code>np.array()</code> or generated with built-in functions. Every array carries attributes that describe it: <code>ndim</code> (number of axes), <code>shape</code> (size along each axis), <code>size</code> (total elements) and <code>dtype</code> (element type).</p>
+  <figure class="code"><div class="code-head"><span>Creating Arrays</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+
+a = np.array([10, 20, 30, 40])      # 1D array
+b = np.array([[1, 2, 3],
+              [4, 5, 6]])          # 2D array
+
+print(a)
+print(b)
+print(type(a))</code></pre><details><summary>Show output</summary><pre class="out">[10 20 30 40]
+[[1 2 3]
+ [4 5 6]]
+&lt;class &#x27;numpy.ndarray&#x27;&gt;</pre></details></figure>
+  <div class="try" id="w-create">
+    <div class="try-head"><h3>Try it: array factory</h3><p>Pick a function and its arguments. The printed array and its attributes update.</p></div>
+    <div class="controls">
+      <label>Function <select data-k="fn">
+        <option value="zeros">np.zeros((rows, cols))</option>
+        <option value="ones">np.ones((rows, cols))</option>
+        <option value="full">np.full((rows, cols), 7)</option>
+        <option value="eye">np.eye(n)</option>
+        <option value="arange">np.arange(start, stop, step)</option>
+      </select></label>
+      <label data-show="zeros ones full">Rows <input type="number" data-k="r" value="2" min="1" max="6"></label>
+      <label data-show="zeros ones full">Cols <input type="number" data-k="c" value="3" min="1" max="8"></label>
+      <label data-show="eye">n <input type="number" data-k="n" value="3" min="1" max="6"></label>
+      <label data-show="arange">Start <input type="number" data-k="a0" value="0"></label>
+      <label data-show="arange">Stop <input type="number" data-k="a1" value="10"></label>
+      <label data-show="arange">Step <input type="number" data-k="a2" value="2"></label>
+    </div>
+    <pre class="codeline" data-k="code"></pre>
+    <div class="split2">
+      <div><p class="label">print(a)</p><pre class="out" data-k="out"></pre></div>
+      <div><p class="label">Attributes</p><pre class="out" data-k="attr"></pre></div>
+    </div>
+  </div>
+  <figure class="code"><div class="code-head"><span>Array Attributes</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+b = np.array([[1, 2, 3], [4, 5, 6]])
+
+print(&quot;ndim    :&quot;, b.ndim)       # number of axes
+print(&quot;shape   :&quot;, b.shape)      # (rows, columns)
+print(&quot;size    :&quot;, b.size)       # total elements
+print(&quot;dtype   :&quot;, b.dtype)      # data type
+print(&quot;itemsize:&quot;, b.itemsize)   # bytes per element</code></pre><details><summary>Show output</summary><pre class="out">ndim    : 2
+shape   : (2, 3)
+size    : 6
+dtype   : int64
+itemsize: 8</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Random Arrays</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+np.random.seed(42)            # same numbers every run
+
+print(np.random.randint(1, 100, size=5))
+print(np.random.rand(3).round(3))       # uniform 0-1
+print(np.random.normal(50, 5, 3).round(2))  # mean, sd
+
+rng = np.random.default_rng(42)   # modern generator
+print(rng.integers(1, 7, size=6))  # dice rolls</code></pre><details><summary>Show output</summary><pre class="out">[52 93 15 72 61]
+[0.597 0.446 0.1  ]
+[39.95 47.54 51.96]
+[1 5 4 3 3 6]</pre></details></figure>
+</section>
+
+<section class="page" data-group="NumPy" data-title="Indexing and slicing" id="np-index">
+  <p class="kicker">NumPy</p>
+  <h1>Indexing and slicing</h1>
+  <p>A slice <code>a[start:stop:step]</code> includes <var>start</var> and stops before <var>stop</var>. Any part can be left out, and negative numbers count from the end. In two dimensions, <code>m[row, col]</code> selects along each axis and <code>m[:, 1]</code> takes a whole column.</p>
+  <div class="try" id="w-slice">
+    <div class="try-head"><h3>Try it: slice explorer</h3><p>Leave a box empty to use its default. Selected positions are highlighted.</p></div>
+    <div class="controls">
+      <label>start <input type="text" inputmode="numeric" data-k="s" value="1" size="4"></label>
+      <label>stop <input type="text" inputmode="numeric" data-k="e" value="6" size="4"></label>
+      <label>step <input type="text" inputmode="numeric" data-k="st" value="2" size="4"></label>
+    </div>
+    <div class="cells" data-k="cells"></div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Indexing and Slicing (2D)</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+m = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [7, 8, 9]])
+
+print(m[1, 2])       # row 1, column 2
+print(m[0])          # first row
+print(m[:, 1])       # second column
+print(m[0:2, 1:])    # rows 0-1, columns 1-2</code></pre><details><summary>Show output</summary><pre class="out">6
+[1 2 3]
+[2 5 8]
+[[2 3]
+ [5 6]]</pre></details></figure>
+  <h2>Boolean masks and fancy indexing</h2>
+  <p>A comparison such as <code>marks &gt; 60</code> returns a boolean array of the same shape. Using it inside brackets keeps only the positions that are <code>True</code>. A list of positions (fancy indexing) picks elements in any order.</p>
+  <div class="try" id="w-mask">
+    <div class="try-head"><h3>Try it: pass mark</h3></div>
+    <div class="controls"><label>Threshold <input type="range" min="30" max="95" value="60" data-k="t"> <output data-k="tv">60</output></label></div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Boolean and Fancy Indexing</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+marks = np.array([45, 78, 92, 33, 67, 88])
+
+print(marks &gt; 60)              # boolean mask
+print(marks[marks &gt; 60])       # keep only True values
+print(marks[[0, 2, 4]])        # fancy indexing
+print(np.where(marks &gt;= 40, &quot;Pass&quot;, &quot;Fail&quot;))</code></pre><details><summary>Show output</summary><pre class="out">[False  True  True False  True  True]
+[78 92 67 88]
+[45 92 67]
+[&#x27;Pass&#x27; &#x27;Pass&#x27; &#x27;Pass&#x27; &#x27;Fail&#x27; &#x27;Pass&#x27; &#x27;Pass&#x27;]</pre></details></figure>
+</section>
+
+<section class="page" data-group="NumPy" data-title="Reshaping and vectorisation" id="np-reshape">
+  <p class="kicker">NumPy</p>
+  <h1>Reshaping and vectorised operations</h1>
+  <p><code>reshape()</code> rearranges the same elements into a new shape; the total number of elements must not change. Passing <code>-1</code> for one dimension lets NumPy compute it. <code>.T</code> transposes and <code>flatten()</code> returns a 1D copy.</p>
+  <div class="try" id="w-reshape">
+    <div class="try-head"><h3>Try it: reshape twelve values</h3><p><code>a = np.arange(1, 13)</code> holds 12 numbers. Choose how many rows.</p></div>
+    <div class="seg" role="group" aria-label="Rows" data-k="rows"></div>
+    <label class="check"><input type="checkbox" data-k="t"> Transpose with <code>.T</code></label>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <h2>Vectorisation and universal functions</h2>
+  <p>Arithmetic operators work element by element on arrays of the same shape, and universal functions (ufuncs) such as <code>np.sqrt</code>, <code>np.exp</code> and <code>np.sin</code> apply to every element without a loop.</p>
+  <figure class="code"><div class="code-head"><span>Element-wise Operations</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+a = np.array([1, 2, 3, 4])
+b = np.array([10, 20, 30, 40])
+
+print(a + b)            # element-wise addition
+print(a * b)            # element-wise multiplication
+print(a ** 2)           # square every element
+print(np.sqrt(a).round(3))  # ufunc
+print(np.exp(a).round(2))</code></pre><details><summary>Show output</summary><pre class="out">[11 22 33 44]
+[ 10  40  90 160]
+[ 1  4  9 16]
+[1.    1.414 1.732 2.   ]
+[ 2.72  7.39 20.09 54.6 ]</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Stacking and Splitting</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+
+print(np.vstack((a, b)))         # vertical stack
+print(np.hstack((a, b)))         # horizontal stack
+print(np.concatenate((a, b)))    # same as hstack for 1D
+
+c = np.arange(10)
+print(np.split(c, 2))            # 2 equal parts</code></pre><details><summary>Show output</summary><pre class="out">[[1 2 3]
+ [4 5 6]]
+[1 2 3 4 5 6]
+[1 2 3 4 5 6]
+[array([0, 1, 2, 3, 4]), array([5, 6, 7, 8, 9])]</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Copy vs View</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+a = np.array([1, 2, 3, 4])
+
+v = a[1:3]        # slice -&gt; VIEW (shares memory)
+c = a.copy()      # COPY  (new memory)
+
+v[0] = 99         # also changes a!
+c[1] = 55         # does NOT change a
+
+print(&quot;a:&quot;, a)
+print(&quot;c:&quot;, c)</code></pre><details><summary>Show output</summary><pre class="out">a: [ 1 99  3  4]
+c: [ 1 55  3  4]</pre></details></figure>
+</section>
+
+<section class="page" data-group="NumPy" data-title="Broadcasting" id="np-broadcast">
+  <p class="kicker">NumPy</p>
+  <h1>Broadcasting</h1>
+  <p>Broadcasting lets NumPy combine arrays of different shapes. Shapes are compared from the right; two sizes are compatible when they are equal or one of them is 1. The smaller array is then treated as if it were repeated to match, without copying data.</p>
+  <div class="try" id="w-bcast">
+    <div class="try-head"><h3>Try it: what gets stretched?</h3><p><code>m</code> has shape (2, 3). Choose what to add to it. Faded cells are virtual copies.</p></div>
+    <div class="seg" role="group" aria-label="Operand" data-k="ops">
+      <button type="button" data-v="scalar" class="on">10</button>
+      <button type="button" data-v="row">row (3,)</button>
+      <button type="button" data-v="col">column (2, 1)</button>
+      <button type="button" data-v="bad">array (2,)</button>
+    </div>
+    <div class="bc" data-k="viz"></div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Broadcasting Example</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+m = np.array([[1, 2, 3],
+              [4, 5, 6]])           # shape (2, 3)
+
+print(m + 10)                       # scalar
+row = np.array([10, 20, 30])        # shape (3,)
+print(m + row)                      # added to each row
+col = np.array([[100], [200]])      # shape (2, 1)
+print(m + col)                      # added to each column</code></pre><details><summary>Show output</summary><pre class="out">[[11 12 13]
+ [14 15 16]]
+[[11 22 33]
+ [14 25 36]]
+[[101 102 103]
+ [204 205 206]]</pre></details></figure>
+</section>
+
+<section class="page" data-group="NumPy" data-title="Aggregation and axis" id="np-axis">
+  <p class="kicker">NumPy</p>
+  <h1>Aggregation and the <code>axis</code> argument</h1>
+  <p>Functions such as <code>sum</code>, <code>mean</code>, <code>max</code> and <code>std</code> reduce an array. With no axis the whole array becomes one value. <code>axis=0</code> runs down the rows, giving one result per column; <code>axis=1</code> runs across the columns, giving one result per row.</p>
+  <div class="try" id="w-axis">
+    <div class="try-head"><h3>Try it: reduce the marks table</h3><p>Rows are students, columns are subjects.</p></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Function" data-k="fn">
+        <button type="button" data-v="sum" class="on">sum</button><button type="button" data-v="mean">mean</button><button type="button" data-v="max">max</button><button type="button" data-v="min">min</button>
+      </div>
+      <div class="seg" role="group" aria-label="Axis" data-k="ax">
+        <button type="button" data-v="none" class="on">no axis</button><button type="button" data-v="0">axis=0</button><button type="button" data-v="1">axis=1</button>
+      </div>
+    </div>
+    <div class="axisgrid" data-k="grid"></div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Aggregation Functions</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+marks = np.array([[78, 85, 90],
+                  [65, 70, 88],
+                  [92, 81, 76]])
+
+print(&quot;Total    :&quot;, marks.sum())
+print(&quot;Mean     :&quot;, marks.mean().round(2))
+print(&quot;Col sums :&quot;, marks.sum(axis=0))
+print(&quot;Row sums :&quot;, marks.sum(axis=1))
+print(&quot;Max, Min :&quot;, marks.max(), marks.min())
+print(&quot;Std dev  :&quot;, marks.std().round(2))</code></pre><details><summary>Show output</summary><pre class="out">Total    : 725
+Mean     : 80.56
+Col sums : [235 236 254]
+Row sums : [253 223 249]
+Max, Min : 92 65
+Std dev  : 8.67</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Linear Algebra with NumPy</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+A = np.array([[2, 1], [1, 3]])
+B = np.array([[1, 0], [0, 2]])
+
+print(A @ B)                      # matrix multiplication
+print(np.dot(A, B))               # same as A @ B
+print(np.linalg.det(A).round(2))  # determinant
+print(np.linalg.inv(A).round(2))  # inverse</code></pre><details><summary>Show output</summary><pre class="out">[[2 2]
+ [1 6]]
+[[2 2]
+ [1 6]]
+5.0
+[[ 0.6 -0.2]
+ [-0.2  0.4]]</pre></details></figure>
+</section>
+
+<section class="page" data-group="NumPy" data-title="NumPy practice" id="np-practice">
+  <p class="kicker">NumPy</p>
+  <h1>NumPy practice</h1>
+  <div class="task"><h3>Task 1: student marks</h3><p>Marks of 4 students in 3 subjects are stored in a 2D array. Find (a) the total of each student, (b) the average of each subject, (c) the topper, and (d) students scoring above 75 in all subjects.</p>
+  <details class="sol"><summary>Show solution</summary><figure class="code"><div class="code-head"><span>Student Marks Analysis</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+marks = np.array([[78, 85, 90],
+                  [65, 70, 88],
+                  [92, 81, 76],
+                  [55, 62, 70]])
+
+total = marks.sum(axis=1)
+print(&quot;Total per student  :&quot;, total)
+print(&quot;Average per subject:&quot;, marks.mean(axis=0).round(2))
+print(&quot;Topper (row index) :&quot;, total.argmax())
+print(&quot;Above 75 in all    :&quot;, np.all(marks &gt; 75, axis=1))</code></pre><details><summary>Show output</summary><pre class="out">Total per student  : [253 223 249 187]
+Average per subject: [72.5 74.5 81. ]
+Topper (row index) : 0
+Above 75 in all    : [ True False  True False]</pre></details></figure></details></div>
+  <div class="task"><h3>Task 2: temperatures</h3><p>Daily temperatures in Celsius for a week are 31, 36, 34, 38, 29, 35, 40. Convert them to Fahrenheit without a loop (F = C × 9/5 + 32) and count the days hotter than 35 °C.</p>
+  <details class="sol"><summary>Show solution</summary><figure class="code"><div class="code-head"><span>Temperature Conversion</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+celsius = np.array([31, 36, 34, 38, 29, 35, 40])
+
+fahrenheit = celsius * 9 / 5 + 32      # no loop needed
+print(&quot;Fahrenheit :&quot;, fahrenheit)
+print(&quot;Hot days   :&quot;, celsius[celsius &gt; 35])
+print(&quot;Count      :&quot;, np.sum(celsius &gt; 35))</code></pre><details><summary>Show output</summary><pre class="out">Fahrenheit : [ 87.8  96.8  93.2 100.4  84.2  95.  104. ]
+Hot days   : [36 38 40]
+Count      : 3</pre></details></figure></details></div>
+</section>
+
+<!-- ================= PANDAS ================= -->
+<section class="page" data-group="Pandas" data-title="Series and DataFrame" id="pd-intro">
+  <p class="kicker">Pandas</p>
+  <h1>Series and DataFrame</h1>
+  <p>Pandas works with labelled, tabular data. A <dfn>Series</dfn> is one-dimensional: values with an index of labels. A <dfn>DataFrame</dfn> is two-dimensional: a table whose columns can each have their own type. Both are built on NumPy arrays.</p>
+  <table class="tbl">
+    <thead><tr><th>Series</th><th>DataFrame</th></tr></thead>
+    <tbody>
+      <tr><td>One-dimensional, like a single column</td><td>Two-dimensional, like a spreadsheet</td></tr>
+      <tr><td>Has an index (row labels)</td><td>Has an index and column labels</td></tr>
+      <tr><td>One data type</td><td>One data type per column</td></tr>
+      <tr><td><code>pd.Series([...], index=[...])</code></td><td><code>pd.DataFrame({col: [...]})</code></td></tr>
+    </tbody>
+  </table>
+  <figure class="code"><div class="code-head"><span>Creating a Series</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+
+s = pd.Series([85, 90, 78],
+              index=[&quot;Math&quot;, &quot;Physics&quot;, &quot;Chem&quot;])
+print(s)
+print(s[&quot;Physics&quot;])        # access by label
+print(s.iloc[0])           # access by position
+print(round(s.mean(), 2))</code></pre><details><summary>Show output</summary><pre class="out">Math       85
+Physics    90
+Chem       78
+dtype: int64
+90
+85
+84.33</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Series from a Dictionary</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+population = {&quot;Delhi&quot;: 32.9, &quot;Mumbai&quot;: 21.7,
+              &quot;Ahmedabad&quot;: 8.9}          # in millions
+s = pd.Series(population)
+
+print(s * 1000)            # vectorised, like NumPy
+print(s[s &gt; 10])           # boolean filtering
+print(s.index.tolist())</code></pre><details><summary>Show output</summary><pre class="out">Delhi        32900.0
+Mumbai       21700.0
+Ahmedabad     8900.0
+dtype: float64
+Delhi     32.9
+Mumbai    21.7
+dtype: float64
+[&#x27;Delhi&#x27;, &#x27;Mumbai&#x27;, &#x27;Ahmedabad&#x27;]</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Creating a DataFrame</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+data = {&quot;Name&quot;:   [&quot;Aarav&quot;, &quot;Diya&quot;, &quot;Ishan&quot;, &quot;Meera&quot;],
+        &quot;Branch&quot;: [&quot;CSE&quot;, &quot;ECE&quot;, &quot;ECE&quot;, &quot;CSE&quot;],
+        &quot;CGPA&quot;:   [8.6, 9.1, 7.4, 8.2],
+        &quot;Age&quot;:    [21, 22, 23, 21]}
+
+df = pd.DataFrame(data)
+print(df)</code></pre><details><summary>Show output</summary><pre class="out">    Name Branch  CGPA  Age
+0  Aarav    CSE   8.6   21
+1   Diya    ECE   9.1   22
+2  Ishan    ECE   7.4   23
+3  Meera    CSE   8.2   21</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Exploring a DataFrame</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+print(df.shape)              # (rows, columns)
+print(df.columns.tolist())
+print(df.head(2))            # first 2 rows
+print(df.describe().round(2))  # summary statistics</code></pre><details><summary>Show output</summary><pre class="out">(4, 4)
+[&#x27;Name&#x27;, &#x27;Branch&#x27;, &#x27;CGPA&#x27;, &#x27;Age&#x27;]
+    Name Branch  CGPA  Age
+0  Aarav    CSE   8.6   21
+1   Diya    ECE   9.1   22
+       CGPA    Age
+count  4.00   4.00
+mean   8.32  21.75
+std    0.72   0.96
+min    7.40  21.00
+25%    8.00  21.00
+50%    8.40  21.50
+75%    8.72  22.25
+max    9.10  23.00</pre></details></figure>
+</section>
+
+<section class="page" data-group="Pandas" data-title="Selecting with loc and iloc" id="pd-select">
+  <p class="kicker">Pandas</p>
+  <h1>Selecting data: <code>loc</code> and <code>iloc</code></h1>
+  <p><code>df["col"]</code> returns one column as a Series, and <code>df[["a", "b"]]</code> returns a DataFrame. For rows, <code>loc</code> selects by <em>label</em> and includes the end of a slice; <code>iloc</code> selects by integer <em>position</em> and excludes it.</p>
+  <div class="try" id="w-loc">
+    <div class="try-head"><h3>Try it: the same numbers, different rows</h3><p>The index labels happen to equal the positions here, which is exactly when the difference surprises people.</p></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Method" data-k="m"><button type="button" data-v="loc" class="on">loc</button><button type="button" data-v="iloc">iloc</button></div>
+      <label>from <select data-k="a"></select></label>
+      <label>to <select data-k="b"></select></label>
+    </div>
+    <pre class="codeline" data-k="code"></pre>
+    <div class="tablewrap" data-k="tbl"></div>
+    <p class="note" data-k="note"></p>
+  </div>
+  <figure class="code"><div class="code-head"><span>Selecting Columns</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+print(df[&quot;Name&quot;])              # one column  -&gt; Series
+print(df[[&quot;Name&quot;, &quot;CGPA&quot;]])    # list of columns -&gt; DataFrame</code></pre><details><summary>Show output</summary><pre class="out">0    Aarav
+1     Diya
+2    Ishan
+3    Meera
+Name: Name, dtype: object
+    Name  CGPA
+0  Aarav   8.6
+1   Diya   9.1
+2  Ishan   7.4
+3  Meera   8.2</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Selecting Rows with loc and iloc</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+print(df.loc[1, &quot;Name&quot;])                 # label
+print(df.loc[0:2, [&quot;Name&quot;, &quot;CGPA&quot;]])     # 0 to 2 included
+print(df.iloc[0:2, 0:2])                 # 0 to 1 only
+print(df.loc[df[&quot;CGPA&quot;] &gt; 8.5, &quot;Name&quot;])  # condition</code></pre><details><summary>Show output</summary><pre class="out">Diya
+    Name  CGPA
+0  Aarav   8.6
+1   Diya   9.1
+2  Ishan   7.4
+    Name Branch
+0  Aarav    CSE
+1   Diya    ECE
+0    Aarav
+1     Diya
+Name: Name, dtype: object</pre></details></figure>
+</section>
+
+<section class="page" data-group="Pandas" data-title="Filter, sort and group" id="pd-query">
+  <p class="kicker">Pandas</p>
+  <h1>Filtering, sorting and grouping</h1>
+  <p>Boolean conditions filter rows; combine them with <code>&amp;</code> (and) or <code>|</code> (or), with brackets around each condition. <code>sort_values()</code> orders rows. <code>groupby()</code> splits the table into groups, applies a function to each, and combines the results.</p>
+  <div class="try" id="w-df">
+    <div class="try-head"><h3>Try it: query builder</h3><p>Build a query on eight students. The pandas code is written for you.</p></div>
+    <div class="controls">
+      <label>Filter <select data-k="fc"><option value="">none</option><option>CGPA</option><option>Age</option><option>Branch</option></select></label>
+      <label>is <select data-k="op"><option value="&gt;">&gt;</option><option value="&gt;=">&gt;=</option><option value="&lt;">&lt;</option><option value="==">==</option></select></label>
+      <label>value <input type="text" data-k="fv" value="8" size="6"></label>
+      <label>Sort by <select data-k="sc"><option value="">none</option><option>CGPA</option><option>Age</option><option>Name</option></select></label>
+      <label class="check"><input type="checkbox" data-k="desc" checked> descending</label>
+      <label>Group by Branch <select data-k="g"><option value="">no grouping</option><option value="mean">mean CGPA</option><option value="count">count</option><option value="max">max CGPA</option></select></label>
+    </div>
+    <pre class="codeline" data-k="code"></pre>
+    <div class="tablewrap" data-k="tbl"></div>
+  </div>
+  <figure class="code"><div class="code-head"><span>Filtering Rows</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+print(df[df[&quot;CGPA&quot;] &gt; 8])
+
+print(df[(df[&quot;Branch&quot;] == &quot;CSE&quot;) &amp; (df[&quot;Age&quot;] &lt; 22)])
+
+print(df.query(&quot;CGPA &gt; 8 and Branch == &#x27;ECE&#x27;&quot;))</code></pre><details><summary>Show output</summary><pre class="out">    Name Branch  CGPA  Age
+0  Aarav    CSE   8.6   21
+1   Diya    ECE   9.1   22
+3  Meera    CSE   8.2   21
+    Name Branch  CGPA  Age
+0  Aarav    CSE   8.6   21
+3  Meera    CSE   8.2   21
+   Name Branch  CGPA  Age
+1  Diya    ECE   9.1   22</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Adding, Updating and Sorting</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+df[&quot;Grade&quot;] = np.where(df[&quot;CGPA&quot;] &gt;= 8.5, &quot;A&quot;, &quot;B&quot;)
+df[&quot;Age&quot;] = df[&quot;Age&quot;] + 1                # update
+df = df.drop(columns=[&quot;Branch&quot;])         # remove
+
+print(df.sort_values(&quot;CGPA&quot;, ascending=False))</code></pre><details><summary>Show output</summary><pre class="out">    Name  CGPA  Age Grade
+1   Diya   9.1   23     A
+0  Aarav   8.6   22     A
+3  Meera   8.2   22     B
+2  Ishan   7.4   24     B</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Grouping and Aggregation</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+df = pd.DataFrame({
+    &quot;Branch&quot;: [&quot;CSE&quot;, &quot;ECE&quot;, &quot;CSE&quot;, &quot;ECE&quot;, &quot;ME&quot;],
+    &quot;CGPA&quot;:   [8.6, 9.1, 7.4, 8.2, 7.9]})
+
+print(df.groupby(&quot;Branch&quot;)[&quot;CGPA&quot;].mean())
+print(df.groupby(&quot;Branch&quot;)[&quot;CGPA&quot;].agg([&quot;count&quot;, &quot;max&quot;]))</code></pre><details><summary>Show output</summary><pre class="out">Branch
+CSE    8.00
+ECE    8.65
+ME     7.90
+Name: CGPA, dtype: float64
+        count  max
+Branch            
+CSE         2  8.6
+ECE         2  9.1
+ME          1  7.9</pre></details></figure>
+</section>
+
+<section class="page" data-group="Pandas" data-title="Missing data and merging" id="pd-clean">
+  <p class="kicker">Pandas</p>
+  <h1>Missing data, merging and concatenating</h1>
+  <p>Missing values appear as <code>NaN</code> (or <code>None</code> for text). <code>isnull()</code> finds them, <code>fillna()</code> replaces them and <code>dropna()</code> removes rows containing them. <code>pd.merge()</code> joins two tables on a key column, like an SQL join; <code>pd.concat()</code> stacks tables.</p>
+  <figure class="code"><div class="code-head"><span>Handling Missing Data</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+import numpy as np
+df = pd.DataFrame({&quot;Name&quot;:  [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;],
+                   &quot;Marks&quot;: [85, np.nan, 72, np.nan],
+                   &quot;City&quot;:  [&quot;Surat&quot;, &quot;Pune&quot;, None, &quot;Delhi&quot;]})
+
+print(df.isnull().sum())                  # count NaN
+print(df[&quot;Marks&quot;].fillna(df[&quot;Marks&quot;].mean()).tolist())
+print(df.dropna())                        # remove NaN rows</code></pre><details><summary>Show output</summary><pre class="out">Name     0
+Marks    2
+City     1
+dtype: int64
+[85.0, 78.5, 72.0, 78.5]
+  Name  Marks   City
+0    A   85.0  Surat</pre></details></figure>
+  <table class="tbl">
+    <thead><tr><th><code>how=</code></th><th>Keeps</th></tr></thead>
+    <tbody>
+      <tr><td><code>"inner"</code> (default)</td><td>Only keys present in both tables</td></tr>
+      <tr><td><code>"left"</code></td><td>All rows of the left table; missing matches become NaN</td></tr>
+      <tr><td><code>"right"</code></td><td>All rows of the right table</td></tr>
+      <tr><td><code>"outer"</code></td><td>All keys from both tables</td></tr>
+    </tbody>
+  </table>
+  <figure class="code"><div class="code-head"><span>Merging and Concatenating</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+students = pd.DataFrame({&quot;ID&quot;: [1, 2, 3],
+                         &quot;Name&quot;: [&quot;Raj&quot;, &quot;Amit&quot;, &quot;Priya&quot;]})
+marks = pd.DataFrame({&quot;ID&quot;: [1, 2, 4], &quot;Marks&quot;: [88, 75, 91]})
+
+print(pd.merge(students, marks, on=&quot;ID&quot;))       # inner
+print(pd.merge(students, marks, on=&quot;ID&quot;, how=&quot;left&quot;))
+print(pd.concat([students, students]).shape)    # stack rows</code></pre><details><summary>Show output</summary><pre class="out">   ID  Name  Marks
+0   1   Raj     88
+1   2  Amit     75
+   ID   Name  Marks
+0   1    Raj   88.0
+1   2   Amit   75.0
+2   3  Priya    NaN
+(6, 2)</pre></details></figure>
+</section>
+
+<section class="page" data-group="Pandas" data-title="Data formats" id="pd-formats">
+  <p class="kicker">Pandas</p>
+  <h1>Data formats</h1>
+  <p>Every format has a matching pair of functions: <code>pd.read_<var>format</var>()</code> returns a DataFrame and <code>df.to_<var>format</var>()</code> writes one. Choose the format by who will read the data next and how large it is.</p>
+  <table class="tbl">
+    <thead><tr><th>Format</th><th>Read</th><th>Write</th><th>Typical use</th><th>Needs</th></tr></thead>
+    <tbody>
+      <tr><td>CSV</td><td><code>read_csv()</code></td><td><code>to_csv()</code></td><td>Plain text, opens anywhere</td><td>nothing</td></tr>
+      <tr><td>Excel</td><td><code>read_excel()</code></td><td><code>to_excel()</code></td><td>Spreadsheets, multiple sheets</td><td>openpyxl</td></tr>
+      <tr><td>JSON</td><td><code>read_json()</code></td><td><code>to_json()</code></td><td>Web APIs</td><td>nothing</td></tr>
+      <tr><td>HDF5</td><td><code>read_hdf()</code></td><td><code>to_hdf()</code></td><td>Large numerical data</td><td>PyTables</td></tr>
+      <tr><td>Parquet</td><td><code>read_parquet()</code></td><td><code>to_parquet()</code></td><td>Compressed, column-oriented</td><td>pyarrow</td></tr>
+      <tr><td>SQL</td><td><code>read_sql()</code></td><td><code>to_sql()</code></td><td>Databases</td><td>a database connection</td></tr>
+    </tbody>
+  </table>
+  <figure class="code"><div class="code-head"><span>Reading and Writing CSV</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+df.to_csv(&quot;students.csv&quot;, index=False)     # write
+
+new_df = pd.read_csv(&quot;students.csv&quot;)       # read
+print(new_df.head(3))
+
+part = pd.read_csv(&quot;students.csv&quot;,
+                   usecols=[&quot;Name&quot;, &quot;CGPA&quot;], nrows=2)
+print(part)</code></pre><details><summary>Show output</summary><pre class="out">    Name Branch  CGPA  Age
+0  Aarav    CSE   8.6   21
+1   Diya    ECE   9.1   22
+2  Ishan    ECE   7.4   23
+    Name  CGPA
+0  Aarav   8.6
+1   Diya   9.1</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>JSON and Excel Formats</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># df is the student DataFrame from &quot;Creating a DataFrame&quot;
+df.to_json(&quot;students.json&quot;, orient=&quot;records&quot;)
+print(pd.read_json(&quot;students.json&quot;).shape)
+
+df.to_excel(&quot;students.xlsx&quot;, sheet_name=&quot;Sem1&quot;,
+            index=False)
+print(pd.read_excel(&quot;students.xlsx&quot;, sheet_name=&quot;Sem1&quot;).head(2))</code></pre><details><summary>Show output</summary><pre class="out">(4, 4)
+    Name Branch  CGPA  Age
+0  Aarav    CSE   8.6   21
+1   Diya    ECE   9.1   22</pre></details></figure>
+</section>
+
+<section class="page" data-group="Pandas" data-title="Pandas practice" id="pd-practice">
+  <p class="kicker">Pandas</p>
+  <h1>Pandas practice</h1>
+  <div class="task"><h3>Task: shop sales</h3><p>A shop records sales with columns <code>Region</code>, <code>Product</code> and <code>Amount</code>. Find the total sales of each region, the region with the highest sales, and a region-by-product summary table.</p>
+  <details class="sol"><summary>Show solution</summary><figure class="code"><div class="code-head"><span>Sales Analysis</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+sales = pd.DataFrame({
+    &quot;Region&quot;:  [&quot;North&quot;, &quot;South&quot;, &quot;North&quot;,
+                &quot;East&quot;, &quot;South&quot;, &quot;East&quot;],
+    &quot;Product&quot;: [&quot;Pen&quot;, &quot;Book&quot;, &quot;Book&quot;, &quot;Pen&quot;, &quot;Pen&quot;, &quot;Book&quot;],
+    &quot;Amount&quot;:  [1200, 3400, 2100, 900, 1500, 2800]})
+
+total = sales.groupby(&quot;Region&quot;)[&quot;Amount&quot;].sum()
+print(total)
+print(&quot;Top region:&quot;, total.idxmax())
+print(sales.pivot_table(values=&quot;Amount&quot;, index=&quot;Region&quot;,
+                        columns=&quot;Product&quot;, aggfunc=&quot;sum&quot;))</code></pre><details><summary>Show output</summary><pre class="out">Region
+East     3700
+North    3300
+South    4900
+Name: Amount, dtype: int64
+Top region: South
+Product  Book   Pen
+Region             
+East     2800   900
+North    2100  1200
+South    3400  1500</pre></details></figure></details></div>
+  <div class="task"><h3>Extension</h3><p>Add a <code>Month</code> column, save the table with <code>to_csv()</code>, read it back, and report the best month for each region using <code>groupby(["Region", "Month"])</code>.</p></div>
+</section>
+
+<!-- ================= SCIPY ================= -->
+<section class="page" data-group="SciPy" data-title="SciPy overview" id="sp-intro">
+  <p class="kicker">SciPy</p>
+  <h1>SciPy: algorithms for science and engineering</h1>
+  <p>SciPy builds on NumPy arrays and adds tested implementations of standard numerical methods. NumPy provides the container and basic maths; SciPy provides the algorithms.</p>
+  <table class="tbl">
+    <thead><tr><th>Sub-module</th><th>Purpose</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>scipy.stats</code></td><td>Distributions and statistical tests</td><td><code>norm.cdf</code>, <code>ttest_ind</code></td></tr>
+      <tr><td><code>scipy.linalg</code></td><td>Linear algebra</td><td><code>solve</code>, <code>det</code>, <code>eig</code></td></tr>
+      <tr><td><code>scipy.integrate</code></td><td>Integration and ODE solvers</td><td><code>quad</code></td></tr>
+      <tr><td><code>scipy.optimize</code></td><td>Minimisation and root finding</td><td><code>minimize_scalar</code>, <code>brentq</code></td></tr>
+      <tr><td><code>scipy.interpolate</code></td><td>Values between known points</td><td><code>CubicSpline</code></td></tr>
+      <tr><td><code>scipy.fft</code></td><td>Frequency analysis</td><td><code>fft</code>, <code>fftfreq</code></td></tr>
+      <tr><td><code>scipy.ndimage</code></td><td>n-dimensional image processing</td><td><code>sobel</code>, <code>binary_erosion</code></td></tr>
+      <tr><td><code>scipy.special</code></td><td>Special functions</td><td><code>gamma</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="page" data-group="SciPy" data-title="Probability distributions" id="sp-dist">
+  <p class="kicker">SciPy</p>
+  <h1>Probability distributions</h1>
+  <p><code>norm(loc, scale)</code> is the normal distribution with mean <var>loc</var> and standard deviation <var>scale</var>. Its <dfn>PDF</dfn> is the height of the curve at <var>x</var> (a density, not a probability); its <dfn>CDF</dfn> is the probability P(X ≤ <var>x</var>), the area to the left; its <dfn>PPF</dfn> is the inverse of the CDF.</p>
+  <div class="try" id="w-norm">
+    <div class="try-head"><h3>Try it: daily rainfall</h3><p>Rainfall is approximately normal. Move <var>x</var> and watch the shaded area, which is the CDF.</p></div>
+    <div class="controls">
+      <label>mean <input type="range" min="20" max="100" value="65" data-k="mu"> <output data-k="muv"></output></label>
+      <label>sd <input type="range" min="2" max="25" value="12" data-k="sd"> <output data-k="sdv"></output></label>
+      <label><var>x</var> <input type="range" min="0" max="140" value="40" data-k="x"> <output data-k="xv"></output></label>
+    </div>
+    <svg class="chart" viewBox="0 0 640 220" data-k="svg" role="img" aria-label="Normal distribution curve with the area to the left of x shaded"></svg>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Normal Distribution: PDF, CDF, PPF</span><button class="copy" type="button">Copy</button></div><pre><code class="py">from scipy.stats import norm
+mean, sd = 65, 12                  # daily rainfall in mm
+
+print(round(norm.pdf(65, loc=mean, scale=sd), 4))   # density
+print(round(norm.cdf(40, loc=mean, scale=sd), 4))   # P(X&lt;=40)
+print(round(1 - norm.cdf(95, mean, sd), 4))         # P(X&gt;95)
+print(round(norm.ppf(0.95, mean, sd), 2))           # 95th pct</code></pre><details><summary>Show output</summary><pre class="out">0.0332
+0.0186
+0.0062
+84.74</pre></details></figure>
+  <h2>Shape of a distribution</h2>
+  <p><dfn>Skewness</dfn> measures asymmetry: 0 is symmetric, positive means a longer right tail, negative a longer left tail. <dfn>Kurtosis</dfn> (excess, as SciPy reports it) compares tail weight with the normal distribution, for which it is 0. As a rule of thumb, |skewness| &lt; 0.5 is close to symmetric.</p>
+  <figure class="code"><div class="code-head"><span>Descriptive Statistics</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy import stats
+
+np.random.seed(42)
+rods = np.random.normal(100, 2, size=120)   # rod lengths
+
+print(&quot;Mean    :&quot;, round(np.mean(rods), 3))
+print(&quot;Variance:&quot;, round(np.var(rods, ddof=1), 3))
+print(&quot;Skewness:&quot;, round(stats.skew(rods), 3))
+print(&quot;Kurtosis:&quot;, round(stats.kurtosis(rods), 3))</code></pre><details><summary>Show output</summary><pre class="out">Mean    : 99.842
+Variance: 3.425
+Skewness: -0.028
+Kurtosis: 0.087</pre></details></figure>
+</section>
+
+<section class="page" data-group="SciPy" data-title="Hypothesis testing" id="sp-test">
+  <p class="kicker">SciPy</p>
+  <h1>Hypothesis testing</h1>
+  <p>A test starts from a null hypothesis H₀ of no difference. The p-value is the probability of seeing a result at least this extreme if H₀ were true. If p is below the chosen significance level (usually 0.05), reject H₀.</p>
+  <table class="tbl">
+    <thead><tr><th>Question</th><th>Test</th><th>Function</th></tr></thead>
+    <tbody>
+      <tr><td>Does a sample mean differ from a claimed value?</td><td>One-sample t-test</td><td><code>ttest_1samp</code></td></tr>
+      <tr><td>Do two independent groups have different means?</td><td>Two-sample t-test</td><td><code>ttest_ind</code></td></tr>
+      <tr><td>Are two categorical variables related?</td><td>Chi-square test</td><td><code>chi2_contingency</code></td></tr>
+    </tbody>
+  </table>
+  <div class="try" id="w-ttest">
+    <div class="try-head"><h3>Try it: two-sample t-test</h3><p>Edit either group (comma-separated marks). The test is recomputed in the browser using the same formulas as <code>ttest_ind</code>.</p></div>
+    <div class="split2">
+      <label class="stack">Group A <textarea rows="2" data-k="a">78, 82, 85, 90, 76, 88, 92, 79, 84, 80</textarea></label>
+      <label class="stack">Group B <textarea rows="2" data-k="b">72, 68, 75, 80, 70, 65, 78, 74, 71, 69</textarea></label>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Variance" data-k="eq"><button type="button" data-v="1" class="on">equal variances</button><button type="button" data-v="0">Welch (equal_var=False)</button></div>
+      <label>α <select data-k="alpha"><option>0.05</option><option>0.01</option><option>0.10</option></select></label>
+    </div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+    <p class="note" data-k="note"></p>
+  </div>
+  <figure class="code"><div class="code-head"><span>One-Sample t-test</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy.stats import ttest_1samp
+
+np.random.seed(2)
+battery = np.random.normal(500, 5, size=30)   # hours
+
+t_stat, p_val = ttest_1samp(battery, 500)     # claim = 500
+print(&quot;Sample mean =&quot;, round(np.mean(battery), 2))
+print(&quot;t =&quot;, round(t_stat, 3), &quot;  p =&quot;, round(p_val, 4))
+if p_val &lt; 0.05:
+    print(&quot;Reject H0: differs from 500 hours&quot;)
+else:
+    print(&quot;Fail to reject H0: no significant difference&quot;)</code></pre><details><summary>Show output</summary><pre class="out">Sample mean = 498.35
+t = -1.876   p = 0.0708
+Fail to reject H0: no significant difference</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Chi-Square Test</span><button class="copy" type="button">Copy</button></div><pre><code class="py">from scipy.stats import chi2_contingency
+
+#            Candidate A  B   C
+observed = [[30, 20, 10],          # Male
+            [25, 35, 15]]          # Female
+
+chi2, p, dof, expected = chi2_contingency(observed)
+print(&quot;Chi-square =&quot;, round(chi2, 3))
+print(&quot;p-value    =&quot;, round(p, 4), &quot;  dof =&quot;, dof)
+print(&quot;Related&quot; if p &lt; 0.05 else &quot;No relationship&quot;)</code></pre><details><summary>Show output</summary><pre class="out">Chi-square = 3.927
+p-value    = 0.1403   dof = 2
+No relationship</pre></details></figure>
+</section>
+
+<section class="page" data-group="SciPy" data-title="Linear algebra" id="sp-linalg">
+  <p class="kicker">SciPy</p>
+  <h1>Solving linear systems</h1>
+  <p>A system of equations is written as <var>A</var><var>x</var> = <var>b</var>, where <var>A</var> holds the coefficients. <code>solve(A, b)</code> returns <var>x</var>. It fails when det(<var>A</var>) = 0, because the equations then have no single solution.</p>
+  <div class="try" id="w-solve">
+    <div class="try-head"><h3>Try it: three equations, three unknowns</h3><p>Edit the coefficients. Try making one row a multiple of another.</p></div>
+    <div class="eqs" data-k="eqs"></div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Determinant, Inverse and Eigenvalues</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy import linalg
+
+A = np.array([[4, 1], [2, 3]], dtype=float)
+
+print(&quot;Determinant:&quot;, round(linalg.det(A), 2))
+print(&quot;Inverse:\n&quot;, linalg.inv(A).round(3))
+values, vectors = linalg.eig(A)
+print(&quot;Eigenvalues:&quot;, values.real)
+print(&quot;Eigenvectors:\n&quot;, vectors.round(3))</code></pre><details><summary>Show output</summary><pre class="out">Determinant: 10.0
+Inverse:
+ [[ 0.3 -0.1]
+ [-0.2  0.4]]
+Eigenvalues: [5. 2.]
+Eigenvectors:
+ [[ 0.707 -0.447]
+ [ 0.707  0.894]]</pre></details></figure>
+</section>
+
+<section class="page" data-group="SciPy" data-title="Integration and optimisation" id="sp-calc">
+  <p class="kicker">SciPy</p>
+  <h1>Integration, optimisation and interpolation</h1>
+  <p><code>quad(f, a, b)</code> computes a definite integral numerically and returns the value with an error estimate. <code>minimize_scalar(f)</code> finds the <var>x</var> that minimises a function, and <code>brentq(f, a, b)</code> finds a root between two points where <var>f</var> changes sign.</p>
+  <div class="try" id="w-quad">
+    <div class="try-head"><h3>Try it: area under a curve</h3></div>
+    <div class="controls">
+      <label>f(x) <select data-k="f">
+        <option value="poly">x**2 + x</option><option value="sin">np.sin(x)</option><option value="gauss">np.exp(-x**2)</option><option value="lor">1 / (1 + x**2)</option>
+      </select></label>
+      <label>a <input type="range" min="-3" max="3" step="0.1" value="0" data-k="a"> <output data-k="av"></output></label>
+      <label>b <input type="range" min="-3" max="3.2" step="0.1" value="2" data-k="b"> <output data-k="bv"></output></label>
+    </div>
+    <svg class="chart" viewBox="0 0 640 220" data-k="svg" role="img" aria-label="Function curve with the integrated area shaded"></svg>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>scipy.integrate: Definite Integrals</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy.integrate import quad
+
+def f(x):
+    return x**2 + x
+
+result, error = quad(f, 0, 2)       # (value, error)
+print(&quot;Integral of x^2 + x =&quot;, round(result, 4))
+
+result, error = quad(np.sin, 0, np.pi)
+print(&quot;Integral of sin(x)  =&quot;, round(result, 4))</code></pre><details><summary>Show output</summary><pre class="out">Integral of x^2 + x = 4.6667
+Integral of sin(x)  = 2.0</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>scipy.optimize: Minimum and Roots</span><button class="copy" type="button">Copy</button></div><pre><code class="py">from scipy.optimize import minimize_scalar, brentq
+
+def f(x):
+    return x**2 + x
+
+res = minimize_scalar(f)
+print(&quot;x   =&quot;, round(res.x, 3))      # optimal value
+print(&quot;fun =&quot;, round(res.fun, 3))    # minimum value
+
+root = brentq(lambda x: x**2 - 4, 0, 5)   # f(x) = 0
+print(&quot;Root of x^2 - 4 :&quot;, round(root, 3))</code></pre><details><summary>Show output</summary><pre class="out">x   = -0.5
+fun = -0.25
+Root of x^2 - 4 : 2.0</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>scipy.interpolate: Estimating Missing Values</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy.interpolate import CubicSpline
+
+hours = np.array([0, 2, 4, 6, 8])
+temp  = np.array([20, 24, 30, 27, 22])     # measured
+
+cs = CubicSpline(hours, temp)
+print(cs([1, 3, 5, 7]).round(2))           # estimated
+print(np.interp([1, 3], hours, temp))      # linear</code></pre><details><summary>Show output</summary><pre class="out">[20.78 27.72 29.47 24.03]
+[22. 27.]</pre></details></figure>
+</section>
+
+<section class="page" data-group="SciPy" data-title="FFT, images and special functions" id="sp-more">
+  <p class="kicker">SciPy</p>
+  <h1>FFT, image processing and special functions</h1>
+  <p>The Fourier transform decomposes a signal into the frequencies it contains, moving from the time (or spatial) domain to the frequency domain. Peaks in the magnitude spectrum reveal the dominant frequencies; the same idea is used to filter images.</p>
+  <figure class="code"><div class="code-head"><span>FFT: Finding Frequencies in a Signal</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy.fft import fft, fftfreq
+
+fs = 100                                # samples per second
+t = np.arange(0, 1, 1/fs)
+signal = np.sin(2*np.pi*5*t) + 0.5*np.sin(2*np.pi*12*t)
+
+amp = np.abs(fft(signal))[:fs//2]
+freq = fftfreq(len(t), 1/fs)[:fs//2]
+print(&quot;Peak frequencies:&quot;, freq[amp &gt; 10], &quot;Hz&quot;)</code></pre><details><summary>Show output</summary><pre class="out">Peak frequencies: [ 5. 12.] Hz</pre></details></figure>
+  <p><code>scipy.ndimage</code> treats an image as an array. The Sobel filter responds to changes in intensity (edges); binary erosion shrinks white regions.</p>
+  <figure class="code"><div class="code-head"><span>scipy.ndimage: Image Processing</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy import ndimage
+
+img = np.zeros((5, 5), dtype=int)
+img[1:4, 1:4] = 1                       # white square
+
+print(ndimage.sobel(img, axis=1))       # vertical edges
+print(ndimage.binary_erosion(img).astype(int))</code></pre><details><summary>Show output</summary><pre class="out">[[ 1  1  0 -1 -1]
+ [ 3  3  0 -3 -3]
+ [ 4  4  0 -4 -4]
+ [ 3  3  0 -3 -3]
+ [ 1  1  0 -1 -1]]
+[[0 0 0 0 0]
+ [0 0 0 0 0]
+ [0 0 1 0 0]
+ [0 0 0 0 0]
+ [0 0 0 0 0]]</pre></details></figure>
+  <p>The gamma function extends the factorial to real numbers: Γ(<var>n</var>) = (<var>n</var> − 1)! for positive integers. It appears in many probability distributions.</p>
+  <figure class="code"><div class="code-head"><span>scipy.special: Gamma Function</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from scipy.special import gamma, factorial
+
+print(gamma(5))              # = 4! = 24
+print(round(gamma(0.5), 4))  # = square root of pi
+print(gamma(np.array([1.0, 2.5, 5.0])).round(4))
+print(factorial(5))</code></pre><details><summary>Show output</summary><pre class="out">24.0
+1.7725
+[ 1.      1.3293 24.    ]
+120.0</pre></details></figure>
+</section>
+
+<!-- ================= STATSMODELS ================= -->
+<section class="page" data-group="statsmodels" data-title="OLS regression" id="sm-ols">
+  <p class="kicker">statsmodels</p>
+  <h1>Ordinary least squares regression</h1>
+  <p>statsmodels fits statistical models and reports their uncertainty. OLS finds the straight line <var>y</var> = <var>b</var>₀ + <var>b</var>₁<var>x</var> that minimises the sum of squared vertical errors. <code>sm.add_constant()</code> adds the column of ones needed for the intercept <var>b</var>₀.</p>
+  <div class="try" id="w-ols">
+    <div class="try-head"><h3>Try it: study hours and marks</h3><p>Edit the data or add an outlier and watch the line and R² respond.</p></div>
+    <div class="split2">
+      <label class="stack">hours <textarea rows="2" data-k="x">1, 2, 3, 4, 5, 6, 7, 8</textarea></label>
+      <label class="stack">marks <textarea rows="2" data-k="y">35, 42, 50, 55, 63, 70, 74, 85</textarea></label>
+    </div>
+    <svg class="chart" viewBox="0 0 640 260" data-k="svg" role="img" aria-label="Scatter plot with fitted regression line"></svg>
+    <div class="controls"><label>Predict for hours = <input type="number" data-k="px" value="9" step="0.5"></label></div>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>OLS Regression: Study Hours vs Marks</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+import statsmodels.api as sm
+
+hours = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+marks = np.array([35, 42, 50, 55, 63, 70, 74, 85])
+
+X = sm.add_constant(hours)         # intercept column
+model = sm.OLS(marks, X).fit()
+
+print(&quot;Coefficients:&quot;, model.params.round(3))
+print(&quot;R-squared   :&quot;, round(model.rsquared, 4))
+print(&quot;p-value     :&quot;, f&quot;{model.pvalues[1]:.2e}&quot;)   # slope</code></pre><details><summary>Show output</summary><pre class="out">Coefficients: [28.286  6.881]
+R-squared   : 0.9945
+p-value     : 5.08e-08</pre></details></figure>
+  <table class="tbl">
+    <thead><tr><th>In <code>model.summary()</code></th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>coef</code></td><td>Estimated intercept and slope</td></tr>
+      <tr><td><code>std err</code></td><td>Uncertainty of each coefficient</td></tr>
+      <tr><td><code>P&gt;|t|</code></td><td>p-value; below 0.05 means the coefficient is significant</td></tr>
+      <tr><td><code>R-squared</code></td><td>Share of the variation in <var>y</var> explained by the model (0 to 1)</td></tr>
+      <tr><td><code>Adj. R-squared</code></td><td>R² penalised for the number of predictors</td></tr>
+      <tr><td><code>F-statistic</code></td><td>Tests whether the model as a whole is useful</td></tr>
+    </tbody>
+  </table>
+  <figure class="code"><div class="code-head"><span>Formula API and Prediction</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+import statsmodels.formula.api as smf
+
+df = pd.DataFrame({&quot;hours&quot;: [1, 2, 3, 4, 5, 6, 7, 8],
+                   &quot;marks&quot;: [35, 42, 50, 55, 63, 70, 74, 85]})
+
+model = smf.ols(&quot;marks ~ hours&quot;, data=df).fit()  # R-style
+print(model.params.round(3))
+
+new = pd.DataFrame({&quot;hours&quot;: [9, 10]})
+print(model.predict(new).round(2))</code></pre><details><summary>Show output</summary><pre class="out">Intercept    28.286
+hours         6.881
+dtype: float64
+0    90.21
+1    97.10
+dtype: float64</pre></details></figure>
+</section>
+
+<section class="page" data-group="statsmodels" data-title="ARIMA forecasting" id="sm-arima">
+  <p class="kicker">statsmodels</p>
+  <h1>Time series forecasting with ARIMA</h1>
+  <p>ARIMA(<var>p</var>, <var>d</var>, <var>q</var>) combines three ideas. <strong>AR(<var>p</var>)</strong>: the next value depends on the previous <var>p</var> values. <strong>I(<var>d</var>)</strong>: the series is differenced <var>d</var> times to remove a trend. <strong>MA(<var>q</var>)</strong>: the next value also depends on the previous <var>q</var> forecast errors.</p>
+  <figure class="code"><div class="code-head"><span>ARIMA Forecast</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+from statsmodels.tsa.arima.model import ARIMA
+
+sales = np.array([23, 25, 20, 27, 30, 28, 26, 29, 31, 33, 35],
+                 dtype=float)
+
+model = ARIMA(sales, order=(1, 1, 1))
+res = model.fit()
+forecast = res.get_forecast(steps=3).predicted_mean
+print(&quot;Next 3 values:&quot;, forecast.round(2))</code></pre><details><summary>Show output</summary><pre class="out">Next 3 values: [34.35 34.23 34.21]</pre></details></figure>
+  <p class="aside">Choose <var>d</var> by differencing until the series has no trend; choose <var>p</var> and <var>q</var> by comparing the AIC reported in <code>res.summary()</code> for a few candidate orders, and keep the lowest.</p>
+</section>
+
+<!-- ================= SYMPY ================= -->
+<section class="page" data-group="SymPy" data-title="Symbolic mathematics" id="sy-intro">
+  <p class="kicker">SymPy</p>
+  <h1>Symbolic mathematics</h1>
+  <p>NumPy and SciPy compute with approximate floating-point numbers. SymPy manipulates exact expressions: <code>sqrt(8)</code> stays <code>2*sqrt(2)</code> and 1/3 stays a fraction. Symbols are declared with <code>sp.symbols()</code>.</p>
+  <figure class="code"><div class="code-head"><span>Numeric vs Symbolic</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import math
+import sympy as sp
+
+print(math.sqrt(8))                  # numeric (approximate)
+print(sp.sqrt(8))                    # symbolic (exact)
+print(sp.Rational(1, 3) + sp.Rational(1, 6))
+print(sp.sqrt(8).evalf(5))           # evaluate to 5 digits</code></pre><details><summary>Show output</summary><pre class="out">2.8284271247461903
+2*sqrt(2)
+1/2
+2.8284</pre></details></figure>
+  <div class="try" id="w-sym">
+    <div class="try-head"><h3>Try it: one quadratic, many operations</h3><p>Choose integer coefficients for <var>a</var>x² + <var>b</var>x + <var>c</var>.</p></div>
+    <div class="controls">
+      <label>a <input type="number" data-k="a" value="1"></label>
+      <label>b <input type="number" data-k="b" value="-5"></label>
+      <label>c <input type="number" data-k="c" value="6"></label>
+      <label>substitute x = <input type="number" data-k="x" value="4"></label>
+    </div>
+    <table class="tbl symtbl" data-k="tbl"></table>
+  </div>
+  <figure class="code"><div class="code-head"><span>Symbols and Algebra</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import sympy as sp
+x, y = sp.symbols(&quot;x y&quot;)
+
+expr = (x + 2) * (x - 3)
+print(sp.expand(expr))                  # expand
+print(sp.factor(x**2 - 9))              # factorise
+print(sp.simplify((x**2 - 1)/(x - 1)))  # simplify
+print(sp.expand((x + y)**3))</code></pre><details><summary>Show output</summary><pre class="out">x**2 - x - 6
+(x - 3)*(x + 3)
+x + 1
+x**3 + 3*x**2*y + 3*x*y**2 + y**3</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Substitution and Solving Equations</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import sympy as sp
+x, y = sp.symbols(&quot;x y&quot;)
+
+expr = x**2 - 5*x + 6
+print(expr.subs(x, 4))                    # value at x = 4
+print(sp.solve(expr, x))                  # roots
+print(sp.solve([x + y - 10, x - y - 2], [x, y]))
+print(sp.solve(sp.Eq(2*x + 3, 11), x))    # 2x + 3 = 11</code></pre><details><summary>Show output</summary><pre class="out">2
+[2, 3]
+{x: 6, y: 4}
+[4]</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Calculus with SymPy</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import sympy as sp
+x = sp.symbols(&quot;x&quot;)
+
+f = x**3 + sp.sin(x)
+print(sp.diff(f, x))                      # derivative
+print(sp.integrate(2*x, x))               # indefinite
+print(sp.integrate(x**2, (x, 0, 3)))      # definite
+print(sp.limit(sp.sin(x)/x, x, 0))        # limit</code></pre><details><summary>Show output</summary><pre class="out">3*x**2 + cos(x)
+x**2
+9
+1</pre></details></figure>
+</section>
+
+<section class="page" data-group="SymPy" data-title="SymPy practice" id="sy-practice">
+  <p class="kicker">SymPy</p>
+  <h1>SymPy practice</h1>
+  <div class="task"><h3>Task</h3><p>(a) Factor x² − 9 and evaluate it at x = 7. (b) Expand (2x − 3)(x + 4) and find its value at x = 2. (c) Convert the expanded expression into a NumPy function with <code>lambdify</code> and evaluate it for x = 1, 2, 3.</p>
+  <details class="sol"><summary>Show solution</summary><figure class="code"><div class="code-head"><span>SymPy Practice</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+import sympy as sp
+x = sp.symbols(&quot;x&quot;)
+
+e1 = x**2 - 9
+print(sp.factor(e1), &quot;-&gt;&quot;, e1.subs(x, 7))
+e2 = sp.expand((2*x - 3)*(x + 4))
+print(e2, &quot;-&gt;&quot;, e2.subs(x, 2))
+g = sp.lambdify(x, e2, &quot;numpy&quot;)
+print(g(np.array([1, 2, 3])))</code></pre><details><summary>Show output</summary><pre class="out">(x - 3)*(x + 3) -&gt; 40
+2*x**2 + 5*x - 12 -&gt; 6
+[-5  6 21]</pre></details></figure></details></div>
+</section>
+
+<!-- ================= NETWORKX ================= -->
+<section class="page" data-group="NetworkX" data-title="Graphs" id="nx-intro">
+  <p class="kicker">NetworkX</p>
+  <h1>Graphs with NetworkX</h1>
+  <p>A graph is a set of <dfn>nodes</dfn> (entities such as people, cities or web pages) joined by <dfn>edges</dfn> (connections). Edges may be directed and may carry a weight such as distance or cost. Typical applications are social networks, transport routes, protein interactions and citation networks.</p>
+  <table class="tbl">
+    <thead><tr><th>Class</th><th>Graph type</th></tr></thead>
+    <tbody>
+      <tr><td><code>nx.Graph()</code></td><td>Undirected</td></tr>
+      <tr><td><code>nx.DiGraph()</code></td><td>Directed</td></tr>
+      <tr><td><code>nx.MultiGraph()</code></td><td>Undirected, several edges allowed between the same pair</td></tr>
+      <tr><td><code>nx.MultiDiGraph()</code></td><td>Directed multigraph</td></tr>
+    </tbody>
+  </table>
+  <figure class="code"><div class="code-head"><span>Creating a Basic Graph</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import networkx as nx
+
+G = nx.Graph()
+G.add_node(1)
+G.add_nodes_from([2, 3, 4])
+G.add_edge(1, 2)
+G.add_edges_from([(2, 3), (3, 1), (3, 4)])
+
+print(&quot;Nodes  :&quot;, list(G.nodes()))
+print(&quot;Edges  :&quot;, list(G.edges()))
+print(&quot;Degree :&quot;, dict(G.degree()))
+print(&quot;Density:&quot;, round(nx.density(G), 3))</code></pre><details><summary>Show output</summary><pre class="out">Nodes  : [1, 2, 3, 4]
+Edges  : [(1, 2), (1, 3), (2, 3), (3, 4)]
+Degree : {1: 2, 2: 2, 3: 3, 4: 1}
+Density: 0.667</pre></details></figure>
+  <p><dfn>Degree centrality</dfn> is the fraction of other nodes a node is directly connected to, a simple measure of importance.</p>
+  <figure class="code"><div class="code-head"><span>Centrality: Who is Most Important?</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import networkx as nx
+
+friends = nx.Graph([(&quot;Raj&quot;, &quot;Amit&quot;), (&quot;Raj&quot;, &quot;Priya&quot;),
+                    (&quot;Raj&quot;, &quot;Neha&quot;), (&quot;Amit&quot;, &quot;Priya&quot;),
+                    (&quot;Neha&quot;, &quot;Kiran&quot;)])
+
+dc = nx.degree_centrality(friends)
+print({k: round(v, 2) for k, v in dc.items()})
+print(&quot;Most connected:&quot;, max(dc, key=dc.get))
+print(&quot;Connected?    :&quot;, nx.is_connected(friends))</code></pre><details><summary>Show output</summary><pre class="out">{&#x27;Raj&#x27;: 0.75, &#x27;Amit&#x27;: 0.5, &#x27;Priya&#x27;: 0.5, &#x27;Neha&#x27;: 0.5, &#x27;Kiran&#x27;: 0.25}
+Most connected: Raj
+Connected?    : True</pre></details></figure>
+</section>
+
+<section class="page" data-group="NetworkX" data-title="Shortest paths" id="nx-path">
+  <p class="kicker">NetworkX</p>
+  <h1>Shortest paths with Dijkstra's algorithm</h1>
+  <p>Dijkstra's algorithm finds the path of least total weight from a source node. It repeatedly takes the closest unvisited node and updates the distances to its neighbours. Weights must not be negative.</p>
+  <div class="try" id="w-dij">
+    <div class="try-head"><h3>Try it: route planner</h3><p>This is the practice graph with one extra node, E. Edit any edge weight or change the endpoints; the shortest path is drawn in green.</p></div>
+    <div class="controls">
+      <label>from <select data-k="s"></select></label>
+      <label>to <select data-k="t"></select></label>
+    </div>
+    <div class="graphbox"><svg class="chart" viewBox="0 0 560 300" data-k="svg" role="img" aria-label="Weighted directed graph"></svg><div class="weights" data-k="w"></div></div>
+    <pre class="codeline" data-k="code"></pre>
+    <pre class="out" data-k="out"></pre>
+  </div>
+  <figure class="code"><div class="code-head"><span>Dijkstra Shortest Path</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import networkx as nx
+
+G = nx.DiGraph()
+G.add_weighted_edges_from([(&quot;A&quot;, &quot;B&quot;, 3), (&quot;A&quot;, &quot;C&quot;, 5),
+                           (&quot;B&quot;, &quot;C&quot;, 7), (&quot;B&quot;, &quot;D&quot;, 9),
+                           (&quot;C&quot;, &quot;D&quot;, 2)])
+
+path = nx.dijkstra_path(G, &quot;A&quot;, &quot;D&quot;, weight=&quot;weight&quot;)
+dist = nx.dijkstra_path_length(G, &quot;A&quot;, &quot;D&quot;, weight=&quot;weight&quot;)
+print(&quot;Shortest path :&quot;, path)
+print(&quot;Total distance:&quot;, dist)</code></pre><details><summary>Show output</summary><pre class="out">Shortest path : [&#x27;A&#x27;, &#x27;C&#x27;, &#x27;D&#x27;]
+Total distance: 7</pre></details></figure>
+</section>
+
+<!-- ================= PYTABLES ================= -->
+<section class="page" data-group="PyTables" data-title="HDF5 structure" id="pt-intro">
+  <p class="kicker">PyTables</p>
+  <h1>Hierarchical data with PyTables</h1>
+  <p>PyTables stores data in HDF5 files, which are organised like a file system: <dfn>groups</dfn> act as folders and hold <dfn>tables</dfn> (rows of typed records) and <dfn>arrays</dfn> (NumPy data). Data is read from disk as needed, so files can be much larger than memory, and compression and fast queries are built in.</p>
+  <div class="try" id="w-h5">
+    <div class="try-head"><h3>Try it: explore <code>college.h5</code></h3><p>Select a node to see what it is and how to reach it.</p></div>
+    <div class="h5"><div class="tree" data-k="tree" role="tree"></div><div class="h5info" data-k="info"></div></div>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>Function or class</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>tb.open_file(name, mode)</code></td><td>Open or create a file; mode <code>"w"</code>, <code>"r"</code> or <code>"a"</code></td></tr>
+      <tr><td><code>create_group(where, name)</code></td><td>Create a group</td></tr>
+      <tr><td><code>tb.IsDescription</code></td><td>Define table columns and their types</td></tr>
+      <tr><td><code>create_table(where, name, desc)</code></td><td>Create a table</td></tr>
+      <tr><td><code>create_array()</code>, <code>create_carray()</code></td><td>Store a NumPy array (carray is chunked and compressible)</td></tr>
+      <tr><td><code>table.where(condition)</code></td><td>Query rows without loading the whole table</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="page" data-group="PyTables" data-title="Create, write and query" id="pt-code">
+  <p class="kicker">PyTables</p>
+  <h1>Create, write and query a table</h1>
+  <p>The workflow has three steps: describe the columns, append rows and flush them to disk, then reopen the file and query it. Run the cells in order; the second continues from the first.</p>
+  <figure class="code"><div class="code-head"><span>Defining and Creating a Table</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import tables as tb
+
+class Student(tb.IsDescription):      # column definitions
+    roll = tb.Int32Col()
+    name = tb.StringCol(16)
+    cgpa = tb.Float32Col()
+
+h5 = tb.open_file(&quot;college.h5&quot;, mode=&quot;w&quot;, title=&quot;College&quot;)
+group = h5.create_group(&quot;/&quot;, &quot;cse&quot;, &quot;CSE Department&quot;)
+table = h5.create_table(group, &quot;students&quot;, Student)
+print(&quot;Path   :&quot;, table._v_pathname)
+print(&quot;Columns:&quot;, table.colnames)</code></pre><details><summary>Show output</summary><pre class="out">Path   : /cse/students
+Columns: [&#x27;cgpa&#x27;, &#x27;name&#x27;, &#x27;roll&#x27;]</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Writing Rows into the Table</span><button class="copy" type="button">Copy</button></div><pre><code class="py"># continues from the previous cell (h5 and table are still open)
+data = [(1, &quot;Raj&quot;, 8.4), (2, &quot;Amit&quot;, 7.9),
+        (3, &quot;Priya&quot;, 9.2), (4, &quot;Neha&quot;, 8.8)]
+
+row = table.row
+for r, n, c in data:
+    row[&quot;roll&quot;], row[&quot;name&quot;], row[&quot;cgpa&quot;] = r, n, c
+    row.append()                 # add record to buffer
+
+table.flush()                    # write buffer to disk
+print(&quot;Rows stored:&quot;, table.nrows)
+h5.close()</code></pre><details><summary>Show output</summary><pre class="out">Rows stored: 4</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Reading and Querying Data</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import tables as tb
+h5 = tb.open_file(&quot;college.h5&quot;, mode=&quot;r&quot;)
+table = h5.root.cse.students          # natural naming
+
+for r in table.where(&quot;cgpa &gt; 8.5&quot;):   # in-kernel query
+    print(r[&quot;roll&quot;], r[&quot;name&quot;].decode(), round(r[&quot;cgpa&quot;], 1))
+
+print(&quot;All CGPA:&quot;, table.col(&quot;cgpa&quot;).round(1))
+h5.close()</code></pre><details><summary>Show output</summary><pre class="out">3 Priya 9.2
+4 Neha 8.8
+All CGPA: [8.4 7.9 9.2 8.8]</pre></details></figure>
+  <figure class="code"><div class="code-head"><span>Storing Compressed NumPy Arrays</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import numpy as np
+import tables as tb
+
+filters = tb.Filters(complevel=5, complib=&quot;zlib&quot;)
+with tb.open_file(&quot;sensor.h5&quot;, &quot;w&quot;) as h5:
+    h5.create_carray(&quot;/&quot;, &quot;readings&quot;, filters=filters,
+                     obj=np.random.rand(1000, 10))
+    h5.create_array(&quot;/&quot;, &quot;ids&quot;, np.arange(10))
+
+with tb.open_file(&quot;sensor.h5&quot;, &quot;r&quot;) as h5:
+    print(&quot;Shape:&quot;, h5.root.readings[:].shape)
+    print(&quot;IDs  :&quot;, h5.root.ids[:5])</code></pre><details><summary>Show output</summary><pre class="out">Shape: (1000, 10)
+IDs  : [0 1 2 3 4]</pre></details></figure>
+  <p>Pandas uses PyTables internally for its HDF5 format, so a DataFrame can be stored with a single call:</p>
+  <figure class="code"><div class="code-head"><span>Pandas + PyTables: HDF5 Format</span><button class="copy" type="button">Copy</button></div><pre><code class="py">import pandas as pd
+
+df = pd.DataFrame({&quot;Name&quot;: [&quot;Raj&quot;, &quot;Amit&quot;, &quot;Priya&quot;],
+                   &quot;CGPA&quot;: [8.4, 7.9, 9.2]})
+
+df.to_hdf(&quot;data.h5&quot;, key=&quot;students&quot;, mode=&quot;w&quot;)  # write
+print(pd.read_hdf(&quot;data.h5&quot;, key=&quot;students&quot;))   # read</code></pre><details><summary>Show output</summary><pre class="out">    Name  CGPA
+0    Raj   8.4
+1   Amit   7.9
+2  Priya   9.2</pre></details></figure>
+</section>
+
+<!-- ================= WRAP-UP ================= -->
+<section class="page" data-group="Wrap-up" data-title="Which package when?" id="wrap-summary">
+  <p class="kicker">Wrap-up</p>
+  <h1>Which package when?</h1>
+  <table class="tbl">
+    <thead><tr><th>Task</th><th>Package</th></tr></thead>
+    <tbody>
+      <tr><td>Fast numerical arrays and matrix maths</td><td>NumPy</td></tr>
+      <tr><td>Cleaning, filtering and grouping tabular data; reading and writing files</td><td>Pandas</td></tr>
+      <tr><td>Statistical tests, integration, optimisation, FFT</td><td>SciPy</td></tr>
+      <tr><td>Regression models with full reports; forecasting</td><td>statsmodels</td></tr>
+      <tr><td>Exact algebra, derivatives, equation solving</td><td>SymPy</td></tr>
+      <tr><td>Graphs, shortest paths, centrality</td><td>NetworkX</td></tr>
+      <tr><td>Very large datasets stored in HDF5 files</td><td>PyTables</td></tr>
+    </tbody>
+  </table>
+  <h2>Common errors and fixes</h2>
+  <input type="search" class="search" placeholder="Search errors, for example shape or KeyError" data-errsearch aria-label="Search errors">
+  <div class="errors">
+    <details><summary><code>ValueError: operands could not be broadcast together</code></summary><p>The shapes are incompatible. Compare them from the right; each pair must be equal or contain a 1. Use <code>reshape</code> or <code>[:, None]</code> to add an axis.</p></details>
+    <details><summary><code>ValueError: cannot reshape array of size 12 into shape (5,3)</code></summary><p>The new shape must contain the same number of elements. Use <code>-1</code> for one dimension to let NumPy compute it.</p></details>
+    <details><summary>Changing a slice changed the original array</summary><p>Slices are views that share memory. Use <code>.copy()</code> when you need an independent array.</p></details>
+    <details><summary><code>KeyError</code> when selecting a column</summary><p>The name does not match exactly; check <code>df.columns.tolist()</code> for spelling, case and trailing spaces.</p></details>
+    <details><summary><code>ValueError: The truth value of a Series is ambiguous</code></summary><p>Use <code>&amp;</code> and <code>|</code> instead of <code>and</code>/<code>or</code>, with brackets around each condition.</p></details>
+    <details><summary><code>SettingWithCopyWarning</code></summary><p>You modified a filtered slice. Use <code>df.loc[condition, "col"] = value</code>, or take <code>.copy()</code> of the subset first.</p></details>
+    <details><summary><code>ImportError: Missing optional dependency 'openpyxl'</code> or <code>'tables'</code></summary><p>Excel needs openpyxl, Parquet needs pyarrow and HDF5 needs PyTables (<code>pip install tables</code>).</p></details>
+    <details><summary><code>LinAlgError: Matrix is singular</code></summary><p>The equations are dependent (determinant 0), so there is no unique solution. Check for a row that is a multiple of another.</p></details>
+    <details><summary><code>ValueError: f(a) and f(b) must have different signs</code> from <code>brentq</code></summary><p>The interval must bracket a root. Plot the function or try different limits.</p></details>
+    <details><summary>OLS slope comes out as the intercept</summary><p><code>sm.OLS</code> does not add an intercept. Wrap X in <code>sm.add_constant()</code>, or use the formula API.</p></details>
+    <details><summary>SymPy: <code>NameError: name 'x' is not defined</code></summary><p>Declare symbols first: <code>x = sp.symbols("x")</code>.</p></details>
+    <details><summary>NetworkX: <code>NetworkXNoPath</code></summary><p>No directed path exists between the nodes. Check edge directions or use <code>nx.Graph()</code> for an undirected graph.</p></details>
+    <details><summary>PyTables: <code>ClosedNodeError</code> or <code>ClosedFileError</code></summary><p>The file was closed before the node was used. Do the work inside a <code>with tb.open_file(...) as h5:</code> block.</p></details>
+    <p class="note" data-errnone hidden>No match. Try a shorter word.</p>
+  </div>
+</section>
+
+<section class="page" data-group="Wrap-up" data-title="Exit quiz" id="wrap-quiz">
+  <p class="kicker">Wrap-up</p>
+  <h1>Exit quiz</h1>
+  <p>Answer all eight questions; each answer is explained after you choose.</p>
+  <div class="quiz" data-k="quiz"></div>
+  <p class="score" data-k="score"></p>
+  <button class="btn" type="button" data-clear>Clear my ticks and answers</button>
+</section>
+
+</main>
+<footer class="pager">
+  <button type="button" id="prev"></button>
+  <button type="button" class="done" id="done" aria-pressed="false">Mark as done</button>
+  <button type="button" id="next"></button>
+</footer>
+<script>(function () {
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const K = (w, k) => w.querySelector('[data-k="' + k + '"]');
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("scp:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("scp:" + k, JSON.stringify(v)); } catch (e) {} },
+  clear() { try { Object.keys(localStorage).filter(k => k.startsWith("scp:")).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+};
+
+/* ---------- NumPy-style formatting ---------- */
+function fmtNum(v, dec) { // repr for one float rounded to dec
+  let x = Math.round(v * 10 ** dec) / 10 ** dec; if (Object.is(x, -0)) x = 0;
+  let s = String(x); if (!s.includes(".") && !s.includes("e")) s += ".";
+  return s;
+}
+function fmtFloatArr(vals, dec) { // numpy-like alignment for 1D float array
+  const s = vals.map(v => fmtNum(v, dec));
+  const fr = Math.max(...s.map(t => t.split(".")[1].length));
+  const ip = Math.max(...s.map(t => t.split(".")[0].length));
+  return "[" + s.map(t => { const [a, b] = t.split("."); return a.padStart(ip) + "." + b.padEnd(fr); }).join(" ") + "]";
+}
+function fmtInt1D(a) { const w = Math.max(...a.map(v => String(v).length)); return "[" + a.map(v => String(v).padStart(w)).join(" ") + "]"; }
+function fmtInt2D(m) {
+  const w = Math.max(...m.flat().map(v => String(v).length));
+  return m.map((r, i) => (i ? " [" : "[[") + r.map(v => String(v).padStart(w)).join(" ") + (i === m.length - 1 ? "]]" : "]")).join("\n");
+}
+function fmtFloat2D(m) { // values are whole floats like 0., 1.
+  return m.map((r, i) => (i ? " [" : "[[") + r.map(v => v + ".").join(" ") + (i === m.length - 1 ? "]]" : "]")).join("\n");
+}
+function fmtScalar(v, dec) { const x = Math.round(v * 10 ** dec) / 10 ** dec; return Number.isInteger(x) ? x.toFixed(1) : String(x); }
+
+/* ---------- code highlighting ---------- */
+const KW = new Set("import from as def return for in if elif else while class with lambda and or not is None True False print".split(" "));
+function highlight(code) {
+  let out = "", i = 0;
+  while (i < code.length) {
+    const ch = code[i];
+    if (ch === "#") { let j = code.indexOf("\n", i); if (j < 0) j = code.length; out += '<span class="tok-c">' + esc(code.slice(i, j)) + "</span>"; i = j; continue; }
+    if (ch === '"' || ch === "'") {
+      let j = i + 1; const tri = code.slice(i, i + 3) === ch.repeat(3);
+      if (tri) { j = code.indexOf(ch.repeat(3), i + 3); j = j < 0 ? code.length : j + 3; }
+      else { while (j < code.length && code[j] !== ch && code[j] !== "\n") { if (code[j] === "\\") j++; j++; } j++; }
+      out += '<span class="tok-s">' + esc(code.slice(i, j)) + "</span>"; i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(ch)) { let j = i; while (j < code.length && /\w/.test(code[j])) j++; const w = code.slice(i, j); out += KW.has(w) ? '<span class="tok-k">' + w + "</span>" : esc(w); i = j; continue; }
+    out += esc(ch); i++;
+  }
+  return out;
+}
+$$("figure.code code.py").forEach(c => { c.innerHTML = highlight(c.textContent); });
+$$("figure.code .copy").forEach(b => b.addEventListener("click", () => {
+  const t = b.closest("figure").querySelector("code").textContent;
+  const done = () => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1400); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, () => fallbackCopy(t, done)); else fallbackCopy(t, done);
+}));
+function fallbackCopy(t, cb) { const a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand("copy"); cb(); } catch (e) {} a.remove(); }
+
+/* ---------- segmented controls ---------- */
+function seg(el, onChange) {
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    $$("button", el).forEach(x => x.classList.toggle("on", x === b)); onChange(b.dataset.v || b.dataset.op);
+  });
+  const on = el.querySelector(".on"); return on ? (on.dataset.v || on.dataset.op) : null;
+}
+
+/* ---------- navigation ---------- */
+const pages = $$(".page");
+const ids = pages.map(p => p.id);
+let cur = 0;
+const doneSet = new Set(store.get("done", []));
+function buildContents() {
+  const nav = $("#contents-nav"); let html = "", g = null;
+  pages.forEach((p, i) => {
+    if (p.dataset.group !== g) { g = p.dataset.group; html += "<h4>" + esc(g) + "</h4>"; }
+    html += '<a href="#' + p.id + '" data-i="' + i + '"' + (i === cur ? ' aria-current="page"' : "") + "><span>" + esc(p.dataset.title) + '</span><span class="tick">' + (doneSet.has(p.id) ? "✓" : "") + "</span></a>";
+  });
+  nav.innerHTML = '<button class="iconbtn" type="button" data-close-contents style="float:right">Close</button><h4 style="margin-top:.3rem">Contents</h4><p class="aside" style="font-size:.85rem;margin:.2rem 0 0">' + doneSet.size + " of " + pages.length + " sections done</p>" + html;
+}
+function show(i, push) {
+  cur = Math.max(0, Math.min(pages.length - 1, i));
+  pages.forEach((p, j) => p.classList.toggle("active", j === cur));
+  const p = pages[cur];
+  $("#bar-sub").textContent = p.dataset.group === "Start" ? "" : p.dataset.group + ": " + p.dataset.title;
+  document.title = p.dataset.title + " | Scientific Python packages";
+  $("#prog").style.width = ((cur + 1) / pages.length * 100) + "%";
+  const prev = $("#prev"), next = $("#next");
+  prev.disabled = cur === 0; next.disabled = cur === pages.length - 1;
+  prev.innerHTML = cur > 0 ? "<small>Previous</small>" + esc(pages[cur - 1].dataset.title) : "";
+  next.innerHTML = cur < pages.length - 1 ? "<small>Next</small>" + esc(pages[cur + 1].dataset.title) : "";
+  const d = $("#done"); d.setAttribute("aria-pressed", doneSet.has(p.id)); d.textContent = doneSet.has(p.id) ? "✓ Done" : "Mark as done";
+  d.hidden = cur === 0;
+  if (push !== false) history.replaceState(null, "", "#" + p.id);
+  buildContents(); window.scrollTo(0, 0);
+}
+$("#prev").addEventListener("click", () => show(cur - 1));
+$("#next").addEventListener("click", () => show(cur + 1));
+$("#done").addEventListener("click", () => {
+  const id = pages[cur].id; doneSet.has(id) ? doneSet.delete(id) : doneSet.add(id);
+  store.set("done", [...doneSet]); show(cur);
+});
+const drawer = $("#drawer");
+const openC = () => { drawer.classList.add("open"); const a = drawer.querySelector('[aria-current="page"]'); (a || drawer.querySelector("a")).focus(); };
+const closeC = () => drawer.classList.remove("open");
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-open-contents]")) openC();
+  if (e.target.closest("[data-close-contents]") || e.target.classList.contains("scrim")) closeC();
+  const a = e.target.closest("#contents-nav a"); if (a) { e.preventDefault(); closeC(); show(+a.dataset.i); }
+  const g = e.target.closest("[data-go]"); if (g) show(ids.indexOf(g.dataset.go));
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeC();
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === "ArrowRight") show(cur + 1); else if (e.key === "ArrowLeft") show(cur - 1);
+});
+$("#theme").addEventListener("click", () => {
+  const r = document.documentElement; const t = r.dataset.theme === "dark" ? "light" : "dark";
+  r.dataset.theme = t; store.set("theme", t);
+});
+(function () { const t = store.get("theme", "light"); document.documentElement.dataset.theme = t; })();
+
+/* ======================= WIDGETS ======================= */
+
+/* list vs array */
+(function () {
+  const w = $("#w-listarr"); if (!w) return;
+  const D = {
+    mul: ["x = [1, 2, 3]\nprint(x * 2)", "[1, 2, 3, 1, 2, 3]", "x = np.array([1, 2, 3])\nprint(x * 2)", "[2 4 6]", "A list repeats itself; an array multiplies every element."],
+    add: ["print(x + [10, 20, 30])", "[1, 2, 3, 10, 20, 30]", "print(x + np.array([10, 20, 30]))", "[11 22 33]", "A list concatenates; an array adds element by element."],
+    pow: ["print(x ** 2)", "TypeError: unsupported operand type(s) for ** or pow(): 'list' and 'int'", "print(x ** 2)", "[1 4 9]", "Lists have no arithmetic of their own; arrays square each element."]
+  };
+  const r = op => { const d = D[op]; K(w, "list").textContent = ">>> " + d[0].split("\n").join("\n>>> ") + "\n" + d[1]; K(w, "list").classList.toggle("err", op === "pow");
+    K(w, "arr").textContent = ">>> " + d[2].split("\n").join("\n>>> ") + "\n" + d[3]; K(w, "note").textContent = d[4]; };
+  r(seg($(".seg", w), r));
+})();
+
+/* array factory */
+(function () {
+  const w = $("#w-create"); if (!w) return;
+  const v = k => K(w, k).value;
+  function r() {
+    const fn = v("fn");
+    $$("[data-show]", w).forEach(l => (l.hidden = !l.dataset.show.split(" ").includes(fn)));
+    let code, out, a, shape, dtype = "float64";
+    const R = Math.max(1, Math.min(6, +v("r") || 1)), C = Math.max(1, Math.min(8, +v("c") || 1));
+    if (fn === "zeros" || fn === "ones") { const x = fn === "zeros" ? 0 : 1; a = Array.from({ length: R }, () => Array(C).fill(x)); code = "a = np." + fn + "((" + R + ", " + C + "))"; out = fmtFloat2D(a); shape = [R, C]; }
+    else if (fn === "full") { a = Array.from({ length: R }, () => Array(C).fill(7)); code = "a = np.full((" + R + ", " + C + "), 7)"; out = fmtInt2D(a); shape = [R, C]; dtype = "int64"; }
+    else if (fn === "eye") { const n = Math.max(1, Math.min(6, +v("n") || 1)); a = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => +(i === j))); code = "a = np.eye(" + n + ")"; out = fmtFloat2D(a); shape = [n, n]; }
+    else {
+      const s0 = Math.round(+v("a0")), s1 = Math.round(+v("a1")), st = Math.round(+v("a2"));
+      code = "a = np.arange(" + s0 + ", " + s1 + ", " + st + ")";
+      if (!st) { K(w, "code").textContent = code; K(w, "out").textContent = "ZeroDivisionError: division by zero"; K(w, "out").classList.add("err"); K(w, "attr").textContent = ""; return; }
+      a = []; for (let x = s0; st > 0 ? x < s1 : x > s1; x += st) { a.push(x); if (a.length > 60) break; }
+      out = a.length ? fmtInt1D(a) : "[]"; shape = [a.length]; dtype = "int64";
+    }
+    K(w, "out").classList.remove("err");
+    const size = shape.reduce((p, q) => p * q, 1);
+    K(w, "code").innerHTML = highlight(code + "\nprint(a)");
+    K(w, "out").textContent = out;
+    K(w, "attr").textContent = "a.ndim     " + shape.length + "\na.shape    (" + shape.join(", ") + (shape.length === 1 ? "," : "") + ")\na.size     " + size + "\na.dtype    " + dtype + "\na.itemsize 8";
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* slice explorer */
+function pySlice(n, start, stop, step) {
+  step = step === null ? 1 : step;
+  const idx = (v, def, lo, hi) => v === null ? def : (v < 0 ? Math.max(v + n, lo) : Math.min(v, hi));
+  let s, e;
+  if (step > 0) { s = idx(start, 0, 0, n); e = idx(stop, n, 0, n); }
+  else { s = idx(start, n - 1, -1, n - 1); e = idx(stop, -1, -1, n - 1); }
+  const out = []; for (let i = s; step > 0 ? i < e : i > e; i += step) out.push(i); return out;
+}
+(function () {
+  const w = $("#w-slice"); if (!w) return;
+  const arr = [10, 20, 30, 40, 50, 60, 70, 80];
+  const parse = s => { s = s.trim(); if (s === "") return null; if (!/^-?\d+$/.test(s)) return NaN; return +s; };
+  function r() {
+    const a = parse(K(w, "s").value), b = parse(K(w, "e").value), c = parse(K(w, "st").value);
+    const txt = (K(w, "s").value.trim()) + ":" + (K(w, "e").value.trim()) + (K(w, "st").value.trim() !== "" ? ":" + K(w, "st").value.trim() : "");
+    K(w, "code").innerHTML = highlight("a = np.array([10, 20, 30, 40, 50, 60, 70, 80])\nprint(a[" + txt + "])");
+    const o = K(w, "out"); o.classList.remove("err");
+    let sel = [];
+    if ([a, b, c].some(Number.isNaN)) { o.textContent = "Enter whole numbers, or leave a box empty."; o.classList.add("err"); }
+    else if (c === 0) { o.textContent = "ValueError: slice step cannot be zero"; o.classList.add("err"); }
+    else { sel = pySlice(arr.length, a, b, c); o.textContent = sel.length ? fmtInt1D(sel.map(i => arr[i])) : "[]"; }
+    K(w, "cells").innerHTML = arr.map((v, i) => '<div class="cell' + (sel.includes(i) ? " sel" : "") + '">' + v + "<small>" + i + " / " + (i - arr.length) + "</small></div>").join("");
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* boolean mask */
+(function () {
+  const w = $("#w-mask"); if (!w) return;
+  const m = [45, 78, 92, 33, 67, 88];
+  function r() {
+    const t = +K(w, "t").value; K(w, "tv").textContent = t;
+    K(w, "code").innerHTML = highlight("marks = np.array([45, 78, 92, 33, 67, 88])\nprint(marks > " + t + ")\nprint(marks[marks > " + t + "])\nprint((marks > " + t + ").sum(), \"passed\")");
+    const mask = m.map(v => v > t), kept = m.filter(v => v > t);
+    K(w, "out").textContent = "[" + mask.map(b => (b ? "True" : "False").padStart(5)).join(" ") + "]\n" + (kept.length ? fmtInt1D(kept) : "[]") + "\n" + kept.length + " passed";
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* reshape */
+(function () {
+  const w = $("#w-reshape"); if (!w) return;
+  const box = K(w, "rows"); box.innerHTML = [1, 2, 3, 4, 6, 12].map(n => '<button type="button" data-v="' + n + '"' + (n === 3 ? ' class="on"' : "") + ">" + n + " × " + 12 / n + "</button>").join("");
+  let rows = 3;
+  function r() {
+    const c = 12 / rows, T = K(w, "t").checked;
+    let m = Array.from({ length: rows }, (_, i) => Array.from({ length: c }, (_, j) => i * c + j + 1));
+    if (T) m = m[0].map((_, j) => m.map(row => row[j]));
+    K(w, "code").innerHTML = highlight("m = np.arange(1, 13).reshape(" + rows + ", " + c + ")" + (T ? "\nm = m.T" : "") + "\nprint(m)\nprint(m.shape)");
+    K(w, "out").textContent = fmtInt2D(m) + "\n(" + m.length + ", " + m[0].length + ")";
+  }
+  seg(box, v => { rows = +v; r(); }); w.addEventListener("change", r); r();
+})();
+
+/* broadcasting */
+(function () {
+  const w = $("#w-bcast"); if (!w) return;
+  const M = [[1, 2, 3], [4, 5, 6]];
+  const grid = (cells, cols, cls) => '<div class="grid" style="grid-template-columns:repeat(' + cols + ',2.7rem)">' + cells.map((v, i) => '<div class="' + (cls ? cls(i) : "") + '">' + v + "</div>").join("") + "</div>";
+  function r(op) {
+    let code, out, viz, err = false;
+    const res = f => M.map((row, i) => row.map((v, j) => v + f(i, j)));
+    if (op === "scalar") { code = "print(m + 10)"; const R = res(() => 10); out = fmtInt2D(R);
+      viz = grid([10, 10, 10, 10, 10, 10], 3, i => (i ? "ghost" : "")); }
+    else if (op === "row") { code = "row = np.array([10, 20, 30])   # shape (3,)\nprint(m + row)"; const R = res((i, j) => 10 * (j + 1)); out = fmtInt2D(R);
+      viz = grid([10, 20, 30, 10, 20, 30], 3, i => (i > 2 ? "ghost" : "")); }
+    else if (op === "col") { code = "col = np.array([[100], [200]])  # shape (2, 1)\nprint(m + col)"; const R = res(i => 100 * (i + 1)); out = fmtInt2D(R);
+      viz = grid([100, 100, 100, 200, 200, 200], 3, i => (i % 3 ? "ghost" : "")); }
+    else { code = "bad = np.array([1, 2])          # shape (2,)\nprint(m + bad)"; err = true;
+      out = "ValueError: operands could not be broadcast together with shapes (2,3) (2,) "; viz = grid([1, 2], 2); }
+    K(w, "code").innerHTML = highlight("m = np.array([[1, 2, 3], [4, 5, 6]])  # shape (2, 3)\n" + code);
+    const o = K(w, "out"); o.textContent = out; o.classList.toggle("err", err);
+    const R = err ? "" : '<span class="sym">=</span>' + grid(out.replace(/[\[\]]/g, " ").trim().split(/\s+/), 3, () => "res");
+    K(w, "viz").innerHTML = grid(M.flat(), 3) + '<span class="sym">+</span>' + viz + R + (err ? '<span class="note">3 and 2 differ, and neither is 1.</span>' : "");
+  }
+  r(seg(K(w, "ops"), r));
+})();
+
+/* axis */
+(function () {
+  const w = $("#w-axis"); if (!w) return;
+  const M = [[78, 85, 90], [65, 70, 88], [92, 81, 76]];
+  let fn = "sum", ax = "none";
+  const F = { sum: a => a.reduce((p, q) => p + q, 0), mean: a => a.reduce((p, q) => p + q, 0) / a.length, max: a => Math.max(...a), min: a => Math.min(...a) };
+  function r() {
+    const rnd = fn === "mean" ? ".round(2)" : "";
+    const call = "marks." + fn + "(" + (ax === "none" ? "" : "axis=" + ax) + ")" + rnd;
+    K(w, "code").innerHTML = highlight("print(" + call + ")");
+    let res, out;
+    const fmt = v => fn === "mean" ? null : v;
+    if (ax === "none") { const v = F[fn](M.flat()); out = fn === "mean" ? String(Math.round(v * 100) / 100) : String(v); }
+    else if (ax === "0") { res = M[0].map((_, j) => F[fn](M.map(r => r[j]))); out = fn === "mean" ? fmtFloatArr(res, 2) : fmtInt1D(res); }
+    else { res = M.map(r => F[fn](r)); out = fn === "mean" ? fmtFloatArr(res, 2) : fmtInt1D(res); }
+    K(w, "out").textContent = out;
+    const show = v => fn === "mean" ? (Math.round(v * 100) / 100).toFixed(2) : v;
+    let h = '<div class="h"></div><div class="h">Maths</div><div class="h">Physics</div><div class="h">Chem</div><div class="h">' + (ax === "1" ? fn : "") + "</div>";
+    M.forEach((row, i) => { h += '<div class="h">S' + (i + 1) + "</div>" + row.map(v => '<div class="v' + (ax !== "none" || true ? " in" : "") + '">' + v + "</div>").join("") + (ax === "1" ? '<div class="r">' + show(res[i]) + "</div>" : "<div></div>"); });
+    if (ax === "0") h += '<div class="h">' + fn + "</div>" + res.map(v => '<div class="r">' + show(v) + "</div>").join("") + "<div></div>";
+    if (ax === "none") h += '<div class="h">' + fn + '</div><div class="r" style="grid-column:span 3;text-align:center">' + out + "</div><div></div>";
+    const g = K(w, "grid"); g.style.gridTemplateColumns = "3rem repeat(3, 4.2rem) 4.4rem"; g.innerHTML = h;
+  }
+  const sb = $$(".seg", w);
+  fn = seg(sb[0], v => { fn = v; r(); }); ax = seg(sb[1], v => { ax = v; r(); }); r();
+})();
+
+/* pandas data */
+const STU = [
+  { Name: "Aarav", Branch: "CSE", CGPA: 8.6, Age: 21 }, { Name: "Diya", Branch: "ECE", CGPA: 9.1, Age: 22 },
+  { Name: "Ishan", Branch: "ECE", CGPA: 7.4, Age: 23 }, { Name: "Meera", Branch: "CSE", CGPA: 8.2, Age: 21 },
+  { Name: "Kabir", Branch: "ME", CGPA: 7.9, Age: 22 }, { Name: "Riya", Branch: "CSE", CGPA: 9.4, Age: 20 },
+  { Name: "Neel", Branch: "ME", CGPA: 6.8, Age: 24 }, { Name: "Tara", Branch: "ECE", CGPA: 8.0, Age: 21 }];
+function dfTable(rows, cols, opts = {}) {
+  let h = '<table class="dft"><thead><tr><th></th>' + cols.map(c => "<th>" + esc(c) + "</th>").join("") + "</tr></thead><tbody>";
+  rows.forEach(r => { h += '<tr class="' + (opts.cls ? opts.cls(r) : "") + '"><th>' + esc(r._i) + "</th>" + cols.map(c => "<td>" + esc(typeof r[c] === "number" && c === "CGPA" ? r[c].toFixed(opts.dec ?? 1) : r[c]) + "</td>").join("") + "</tr>"; });
+  return h + "</tbody></table>";
+}
+
+/* loc / iloc */
+(function () {
+  const w = $("#w-loc"); if (!w) return;
+  const rows = STU.slice(0, 6).map((r, i) => ({ ...r, _i: i }));
+  const A = K(w, "a"), B = K(w, "b");
+  A.innerHTML = B.innerHTML = rows.map((_, i) => "<option>" + i + "</option>").join("");
+  A.value = 1; B.value = 3; let m = "loc";
+  function r() {
+    const a = +A.value, b = +B.value, end = m === "loc" ? b : b - 1;
+    K(w, "code").innerHTML = highlight("df." + m + "[" + a + ":" + b + "]");
+    K(w, "tbl").innerHTML = dfTable(rows, ["Name", "Branch", "CGPA", "Age"], { cls: r => (r._i >= a && r._i <= end ? "sel" : "dim") });
+    const n = Math.max(0, end - a + 1);
+    K(w, "note").textContent = m === "loc" ? "loc includes the end label " + b + ": " + n + " row" + (n === 1 ? "" : "s") + " selected." : "iloc stops before position " + b + ": " + n + " row" + (n === 1 ? "" : "s") + " selected.";
+  }
+  seg(K(w, "m"), v => { m = v; r(); }); w.addEventListener("change", r); r();
+})();
+
+/* query builder */
+(function () {
+  const w = $("#w-df"); if (!w) return;
+  const v = k => K(w, k);
+  function r() {
+    let rows = STU.map((x, i) => ({ ...x, _i: i }));
+    const fc = v("fc").value, op = v("op").value.replace("&gt;", ">").replace("&lt;", "<"), raw = v("fv").value.trim(), sc = v("sc").value, desc = v("desc").checked, g = v("g").value;
+    v("op").disabled = v("fv").disabled = !fc; v("sc").disabled = v("desc").disabled = !!g;
+    let lines = [], expr = "df", err = "";
+    if (fc) {
+      if (fc === "Branch") { const val = raw.replace(/["']/g, ""); expr = 'df[df["Branch"] ' + (op === "==" ? "==" : op) + ' "' + val + '"]';
+        rows = rows.filter(x => op === "==" ? x.Branch === val : op === ">" ? x.Branch > val : op === ">=" ? x.Branch >= val : x.Branch < val); }
+      else { const n = Number(raw); if (raw === "" || Number.isNaN(n)) err = "Enter a number for " + fc + ".";
+        else { expr = 'df[df["' + fc + '"] ' + op + " " + raw + "]"; rows = rows.filter(x => op === ">" ? x[fc] > n : op === ">=" ? x[fc] >= n : op === "<" ? x[fc] < n : x[fc] === n); } }
+    }
+    if (g) {
+      const groups = {}; rows.forEach(x => (groups[x.Branch] = groups[x.Branch] || []).push(x));
+      const keys = Object.keys(groups).sort();
+      const col = g === "count" ? "Name" : "CGPA";
+      lines.push("print(" + (expr === "df" ? "df" : "(" + expr + ")") + '.groupby("Branch")["' + col + '"].' + g + "())");
+      const out = keys.map(k => { const a = groups[k].map(x => x.CGPA); const val = g === "count" ? a.length : g === "max" ? Math.max(...a) : a.reduce((p, q) => p + q, 0) / a.length; return { _i: k, [g === "count" ? "count" : "CGPA"]: g === "count" ? val : Math.round(val * 100) / 100 }; });
+      v("tbl").innerHTML = err ? "" : out.length ? dfTable(out, [g === "count" ? "count" : "CGPA"], { dec: g === "mean" ? 2 : 1 }).replace("<th></th>", "<th>Branch</th>") : "<p class='note'>Empty result: no rows match.</p>";
+    } else {
+      if (sc) { rows.sort((p, q) => (p[sc] < q[sc] ? -1 : p[sc] > q[sc] ? 1 : 0) * (desc ? -1 : 1)); expr = (expr === "df" ? "df" : "(" + expr + ")") + '.sort_values("' + sc + '"' + (desc ? ", ascending=False" : "") + ")"; }
+      lines.push("print(" + expr + ")");
+      v("tbl").innerHTML = err ? "" : rows.length ? dfTable(rows, ["Name", "Branch", "CGPA", "Age"]) : "<p class='note'>Empty DataFrame: no rows match the filter.</p>";
+    }
+    v("code").innerHTML = err ? '<span class="tok-n">' + esc(err) + "</span>" : highlight(lines.join("\n"));
+  }
+  w.addEventListener("input", r); w.addEventListener("change", r); r();
+})();
+
+/* ---------- maths helpers ---------- */
+function erf(x) { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x);
+  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return s * y; }
+const normPdf = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI));
+const normCdf = (x, m, s) => 0.5 * (1 + erf((x - m) / (s * Math.SQRT2)));
+function lgamma(x) { const c = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+  let y = x, t = x + 5.5; t -= (x + 0.5) * Math.log(t); let s = 1.000000000190015; for (const v of c) s += v / ++y; return -t + Math.log(2.5066282746310005 * s / x); }
+function betacf(a, b, x) { let qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap; if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d; let h = d;
+  for (let m = 1; m <= 300; m++) { const m2 = 2 * m; let aa = m * (b - m) * x / ((qam + m2) * (a + m2)); d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d; h *= d * c;
+    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2)); d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 3e-14) break; } return h; }
+function ibeta(x, a, b) { if (x <= 0) return 0; if (x >= 1) return 1; const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+  return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b; }
+const tTwoSided = (t, df) => ibeta(df / (df + t * t), df / 2, 0.5);
+const pyRound = (v, d) => { const x = Math.round(v * 10 ** d) / 10 ** d; return Number.isInteger(x) ? x.toFixed(1) : String(x); };
+const pyRepr = v => { if (Math.abs(v) < 1e-4 && v !== 0) { const s = v.toExponential(); const [m, e] = s.split("e"); const ee = Math.abs(+e); return m + "e" + (+e < 0 ? "-" : "+") + String(ee).padStart(2, "0"); } return pyRound(v, 15).replace(/(\.\d*?)0+$/, "$1"); };
+const parseList = s => s.split(/[,\s]+/).filter(Boolean).map(Number);
+
+/* SVG helper */
+const NS = "http://www.w3.org/2000/svg";
+function axes(svg, W, H, pad, xs, ys, xl, yl) {
+  let h = '<line x1="' + pad.l + '" y1="' + (H - pad.b) + '" x2="' + (W - pad.r) + '" y2="' + (H - pad.b) + '" stroke="var(--muted)" stroke-width="1"/>';
+  xs.ticks.forEach(t => { const x = xs.f(t); h += '<line x1="' + x + '" y1="' + (H - pad.b) + '" x2="' + x + '" y2="' + (H - pad.b + 4) + '" stroke="var(--muted)"/><text x="' + x + '" y="' + (H - pad.b + 17) + '" text-anchor="middle" font-size="12" fill="var(--muted)">' + t + "</text>"; });
+  if (ys) { h += '<line x1="' + pad.l + '" y1="' + pad.t + '" x2="' + pad.l + '" y2="' + (H - pad.b) + '" stroke="var(--muted)"/>';
+    ys.ticks.forEach(t => { const y = ys.f(t); h += '<line x1="' + pad.l + '" y1="' + y + '" x2="' + (W - pad.r) + '" y2="' + y + '" stroke="var(--rule)"/><text x="' + (pad.l - 6) + '" y="' + (y + 4) + '" text-anchor="end" font-size="12" fill="var(--muted)">' + t + "</text>"; }); }
+  if (xl) h += '<text x="' + (W - pad.r) + '" y="' + (H - 4) + '" text-anchor="end" font-size="12" fill="var(--muted)">' + xl + "</text>";
+  if (yl) h += '<text x="' + (pad.l + 4) + '" y="' + (pad.t - 6) + '" font-size="12" fill="var(--muted)">' + yl + "</text>";
+  return h;
+}
+const lin = (d0, d1, r0, r1) => v => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
+function niceTicks(a, b, n) { const span = b - a, step0 = span / n, mag = 10 ** Math.floor(Math.log10(step0)); const step = [1, 2, 5, 10].map(k => k * mag).find(s => span / s <= n) || 10 * mag;
+  const out = []; for (let t = Math.ceil(a / step) * step; t <= b + 1e-9; t += step) out.push(+t.toFixed(6)); return out; }
+
+/* normal distribution */
+(function () {
+  const w = $("#w-norm"); if (!w) return;
+  function r() {
+    const mu = +K(w, "mu").value, sd = +K(w, "sd").value, x = +K(w, "x").value;
+    K(w, "muv").textContent = mu; K(w, "sdv").textContent = sd; K(w, "xv").textContent = x;
+    const W = 640, H = 220, pad = { l: 16, r: 16, t: 14, b: 28 };
+    const X = lin(0, 140, pad.l, W - pad.r), ymax = normPdf(mu, mu, sd) * 1.08, Y = lin(0, ymax, H - pad.b, pad.t);
+    let path = "", area = "M" + X(0) + "," + Y(0);
+    for (let v = 0; v <= 140; v += 0.5) { const y = normPdf(v, mu, sd); path += (v ? "L" : "M") + X(v).toFixed(1) + "," + Y(y).toFixed(1); if (v <= x) area += "L" + X(v).toFixed(1) + "," + Y(y).toFixed(1); }
+    area += "L" + X(x) + "," + Y(0) + "Z";
+    K(w, "svg").innerHTML = axes(null, W, H, pad, { f: X, ticks: [0, 20, 40, 60, 80, 100, 120, 140] }, null, "rainfall (mm)") +
+      '<path d="' + area + '" fill="var(--accent)" opacity=".18"/><path d="' + path + '" fill="none" stroke="var(--accent)" stroke-width="2"/>' +
+      '<line x1="' + X(x) + '" y1="' + Y(0) + '" x2="' + X(x) + '" y2="' + Y(normPdf(x, mu, sd)) + '" stroke="var(--ink)" stroke-dasharray="3 3"/><text x="' + (X(x) + 5) + '" y="' + (pad.t + 10) + '" font-size="12" fill="var(--ink)">x = ' + x + "</text>";
+    K(w, "code").innerHTML = highlight("from scipy.stats import norm\nprint(round(norm.pdf(" + x + ", loc=" + mu + ", scale=" + sd + "), 4))\nprint(round(norm.cdf(" + x + ", loc=" + mu + ", scale=" + sd + "), 4))   # P(X <= " + x + ")\nprint(round(1 - norm.cdf(" + x + ", " + mu + ", " + sd + "), 4))       # P(X > " + x + ")");
+    const c = normCdf(x, mu, sd);
+    K(w, "out").textContent = pyRound(normPdf(x, mu, sd), 4) + "\n" + pyRound(c, 4) + "\n" + pyRound(1 - c, 4);
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* t-test */
+(function () {
+  const w = $("#w-ttest"); if (!w) return;
+  let eq = "1";
+  function r() {
+    const a = parseList(K(w, "a").value), b = parseList(K(w, "b").value), al = +K(w, "alpha").value;
+    const o = K(w, "out"); o.classList.remove("err");
+    K(w, "code").innerHTML = highlight("from scipy.stats import ttest_ind\nt_stat, p_val = ttest_ind(group_a, group_b" + (eq === "0" ? ", equal_var=False" : "") + ")\nprint(\"t =\", round(t_stat, 3), \"  p =\", round(p_val, 5))");
+    if (a.some(Number.isNaN) || b.some(Number.isNaN) || a.length < 2 || b.length < 2) { o.textContent = "Each group needs at least two numbers, separated by commas."; o.classList.add("err"); K(w, "note").textContent = ""; return; }
+    const mean = x => x.reduce((p, q) => p + q, 0) / x.length, vr = x => { const m = mean(x); return x.reduce((p, q) => p + (q - m) ** 2, 0) / (x.length - 1); };
+    const n1 = a.length, n2 = b.length, m1 = mean(a), m2 = mean(b), v1 = vr(a), v2 = vr(b);
+    let t, df;
+    if (eq === "1") { df = n1 + n2 - 2; const sp = ((n1 - 1) * v1 + (n2 - 1) * v2) / df; t = (m1 - m2) / Math.sqrt(sp * (1 / n1 + 1 / n2)); }
+    else { const se1 = v1 / n1, se2 = v2 / n2; t = (m1 - m2) / Math.sqrt(se1 + se2); df = (se1 + se2) ** 2 / (se1 ** 2 / (n1 - 1) + se2 ** 2 / (n2 - 1)); }
+    if (!isFinite(t)) { o.textContent = "Both groups have zero variance; the t statistic is undefined."; o.classList.add("err"); return; }
+    const p = tTwoSided(t, df);
+    o.textContent = "t = " + pyRound(t, 3) + "   p = " + pyRepr(Math.round(p * 1e5) / 1e5) + "\nmean A = " + pyRound(m1, 2) + ", mean B = " + pyRound(m2, 2) + ", df = " + (eq === "1" ? df : pyRound(df, 2));
+    K(w, "note").textContent = p < al ? "p < " + al + ": reject H₀. The group means differ significantly." : "p ≥ " + al + ": fail to reject H₀. The data do not show a significant difference.";
+  }
+  seg(K(w, "eq"), v => { eq = v; r(); }); w.addEventListener("input", r); w.addEventListener("change", r); r();
+})();
+
+/* linear solve */
+(function () {
+  const w = $("#w-solve"); if (!w) return;
+  const A0 = [[3, 2, 1, 5], [2, 3, 2, 2], [1, 2, 3, 3]], V = ["x", "y", "z"];
+  K(w, "eqs").innerHTML = A0.map((row, i) => '<div class="row">' + row.slice(0, 3).map((v, j) => '<input type="number" aria-label="row ' + (i + 1) + " " + V[j] + ' coefficient" data-i="' + i + '" data-j="' + j + '" value="' + v + '">' + V[j] + (j < 2 ? " +" : " =")).join(" ") + ' <input type="number" aria-label="row ' + (i + 1) + ' right side" data-i="' + i + '" data-j="3" value="' + row[3] + '"></div>').join("");
+  function r() {
+    const M = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+    $$("input", K(w, "eqs")).forEach(el => (M[+el.dataset.i][+el.dataset.j] = +el.value || 0));
+    const A = M.map(r => r.slice(0, 3)), b = M.map(r => r[3]);
+    const det = A[0][0] * (A[1][1] * A[2][2] - A[1][2] * A[2][1]) - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0]) + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
+    K(w, "code").innerHTML = highlight("A = np.array([" + A.map(r => "[" + r.join(", ") + "]").join(", ") + "], dtype=float)\nb = np.array([" + b.join(", ") + "], dtype=float)\nprint(\"det =\", round(linalg.det(A), 3))\nprint(\"x, y, z =\", solve(A, b).round(3))");
+    const o = K(w, "out");
+    if (Math.abs(det) < 1e-10) { o.textContent = "det = " + pyRound(0, 3) + "\nLinAlgError: Matrix is singular."; o.classList.add("err"); return; }
+    o.classList.remove("err");
+    const m = M.map(r => r.slice());
+    for (let c = 0; c < 3; c++) { let p = c; for (let r2 = c + 1; r2 < 3; r2++) if (Math.abs(m[r2][c]) > Math.abs(m[p][c])) p = r2; [m[c], m[p]] = [m[p], m[c]];
+      for (let r2 = 0; r2 < 3; r2++) if (r2 !== c) { const f = m[r2][c] / m[c][c]; for (let k = c; k < 4; k++) m[r2][k] -= f * m[c][k]; } }
+    const x = m.map((row, i) => row[3] / row[i]);
+    o.textContent = "det = " + pyRound(det, 3) + "\nx, y, z = " + fmtFloatArr(x, 3);
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* integration */
+(function () {
+  const w = $("#w-quad"); if (!w) return;
+  const F = { poly: [x => x * x + x, "x**2 + x"], sin: [Math.sin, "np.sin(x)"], gauss: [x => Math.exp(-x * x), "np.exp(-x**2)"], lor: [x => 1 / (1 + x * x), "1 / (1 + x**2)"] };
+  function r() {
+    const [f, s] = F[K(w, "f").value]; const a = +K(w, "a").value, b = +K(w, "b").value;
+    K(w, "av").textContent = a.toFixed(1); K(w, "bv").textContent = b.toFixed(1);
+    const n = 2000, h = (b - a) / n; let sum = f(a) + f(b); for (let i = 1; i < n; i++) sum += f(a + i * h) * (i % 2 ? 4 : 2); const I = sum * h / 3;
+    const W = 640, H = 220, pad = { l: 40, r: 16, t: 14, b: 28 };
+    let ymin = 0, ymax = 0; for (let x = -3; x <= 3.2; x += 0.05) { const y = f(x); ymin = Math.min(ymin, y); ymax = Math.max(ymax, y); }
+    const X = lin(-3, 3.2, pad.l, W - pad.r), Y = lin(ymin, ymax * 1.05, H - pad.b, pad.t);
+    let path = ""; for (let x = -3; x <= 3.2001; x += 0.025) path += (x === -3 ? "M" : "L") + X(x).toFixed(1) + "," + Y(f(x)).toFixed(1);
+    let area = "M" + X(a) + "," + Y(0); const lo = Math.min(a, b), hi = Math.max(a, b); for (let x = lo; x <= hi + 1e-9; x += 0.02) area += "L" + X(x).toFixed(1) + "," + Y(f(x)).toFixed(1); area += "L" + X(hi) + "," + Y(0) + "Z";
+    area = area.replace("M" + X(a), "M" + X(lo));
+    K(w, "svg").innerHTML = axes(null, W, H, pad, { f: X, ticks: [-3, -2, -1, 0, 1, 2, 3] }, { f: Y, ticks: niceTicks(ymin, ymax, 4) }) +
+      '<line x1="' + pad.l + '" y1="' + Y(0) + '" x2="' + (W - pad.r) + '" y2="' + Y(0) + '" stroke="var(--muted)"/><path d="' + area + '" fill="var(--accent)" opacity=".18"/><path d="' + path + '" fill="none" stroke="var(--accent)" stroke-width="2"/>';
+    K(w, "code").innerHTML = highlight("result, error = quad(lambda x: " + s + ", " + a + ", " + b + ")\nprint(round(result, 4))");
+    K(w, "out").textContent = pyRound(I, 4) + (a > b ? "\n(a > b, so the sign is reversed)" : "");
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* OLS */
+(function () {
+  const w = $("#w-ols"); if (!w) return;
+  function r() {
+    const x = parseList(K(w, "x").value), y = parseList(K(w, "y").value), o = K(w, "out");
+    if (x.length !== y.length || x.length < 3 || x.some(Number.isNaN) || y.some(Number.isNaN)) { o.textContent = "Give the same number (at least 3) of hours and marks."; o.classList.add("err"); K(w, "svg").innerHTML = ""; return; }
+    o.classList.remove("err");
+    const n = x.length, mx = x.reduce((p, q) => p + q, 0) / n, my = y.reduce((p, q) => p + q, 0) / n;
+    let sxy = 0, sxx = 0, syy = 0; x.forEach((v, i) => { sxy += (v - mx) * (y[i] - my); sxx += (v - mx) ** 2; syy += (y[i] - my) ** 2; });
+    if (sxx === 0) { o.textContent = "All hours are equal, so the slope cannot be estimated."; o.classList.add("err"); return; }
+    const b1 = sxy / sxx, b0 = my - b1 * mx, sse = y.reduce((p, v, i) => p + (v - b0 - b1 * x[i]) ** 2, 0), r2 = 1 - sse / syy;
+    const px = +K(w, "px").value;
+    o.textContent = "Coefficients: " + fmtFloatArr([b0, b1], 3) + "      # [intercept, slope]\nR-squared   : " + pyRound(r2, 4) + "\nPredicted marks for " + px + " hours: " + pyRound(b0 + b1 * px, 2);
+    const W = 640, H = 260, pad = { l: 40, r: 16, t: 18, b: 30 };
+    const xa = Math.min(0, ...x), xb = Math.max(...x, px) + 1, ya = Math.min(0, ...y), yb = Math.max(...y, b0 + b1 * px) * 1.08;
+    const X = lin(xa, xb, pad.l, W - pad.r), Y = lin(ya, yb, H - pad.b, pad.t);
+    let h = axes(null, W, H, pad, { f: X, ticks: niceTicks(xa, xb, 8) }, { f: Y, ticks: niceTicks(ya, yb, 5) }, "hours", "marks");
+    x.forEach((v, i) => { h += '<line x1="' + X(v) + '" y1="' + Y(y[i]) + '" x2="' + X(v) + '" y2="' + Y(b0 + b1 * v) + '" stroke="var(--alert)" stroke-width="1" opacity=".5"/>'; });
+    h += '<line x1="' + X(xa) + '" y1="' + Y(b0 + b1 * xa) + '" x2="' + X(xb) + '" y2="' + Y(b0 + b1 * xb) + '" stroke="var(--accent)" stroke-width="2"/>';
+    x.forEach((v, i) => { h += '<circle cx="' + X(v) + '" cy="' + Y(y[i]) + '" r="4.5" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5"/>'; });
+    h += '<circle cx="' + X(px) + '" cy="' + Y(b0 + b1 * px) + '" r="5" fill="var(--accent)"/>';
+    h += '<text x="' + (W - pad.r) + '" y="' + (pad.t + 4) + '" text-anchor="end" font-size="13" fill="var(--ink)">marks = ' + pyRound(b0, 2) + " + " + pyRound(b1, 2) + " × hours</text>";
+    K(w, "svg").innerHTML = h;
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* SymPy quadratic */
+(function () {
+  const w = $("#w-sym"); if (!w) return;
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+  const fr = (p, q) => { if (q < 0) { p = -p; q = -q; } const g = gcd(p, q) || 1; return [p / g, q / g]; };
+  const frStr = ([p, q]) => q === 1 ? String(p) : p + "/" + q;
+  function term(coef, pow, first) { // coef = [p,q]
+    let [p, q] = coef; if (p === 0) return ""; const neg = p < 0; p = Math.abs(p);
+    const xs = pow === 0 ? "" : pow === 1 ? "x" : "x**" + pow;
+    let body;
+    if (pow === 0) body = q === 1 ? String(p) : p + "/" + q;
+    else body = (p === 1 ? xs : p + "*" + xs) + (q === 1 ? "" : "/" + q);
+    return first ? (neg ? "-" : "") + body : (neg ? " - " : " + ") + body;
+  }
+  function poly(cs) {
+    const nz = cs.filter(([c]) => c[0] !== 0);
+    if (nz.length === 2 && nz[0][0][0] < 0 && nz[1][1] === 0 && nz[1][0][0] > 0) { // SymPy prints 9 - x**2
+      return term(nz[1][0], 0, true) + term(nz[0][0], nz[0][1], false); }
+    let s = ""; nz.forEach(([c, pw]) => { s += term(c, pw, s === ""); }); return s || "0"; }
+  function lf(q, p) { // factor q*x - p
+    const xs = q === 1 ? "x" : q + "*x"; return p === 0 ? xs : xs + (p > 0 ? " - " + p : " + " + -p);
+  }
+  function r() {
+    const a = Math.round(+K(w, "a").value), b = Math.round(+K(w, "b").value), c = Math.round(+K(w, "c").value), x0 = Math.round(+K(w, "x").value);
+    const tbl = K(w, "tbl");
+    if (a === 0) { tbl.innerHTML = "<tr><td colspan='2'>Set a to a non-zero integer so the expression stays quadratic.</td></tr>"; return; }
+    const expr = poly([[[a, 1], 2], [[b, 1], 1], [[c, 1], 0]]);
+    // factor
+    let fac = expr; const D = b * b - 4 * a * c, s = Math.round(Math.sqrt(Math.max(D, 0)));
+    const g0 = gcd(gcd(a, b), c), sign = a < 0 ? -1 : 1, g = g0 * sign;
+    const A = a / g, B = b / g, C = c / g;
+    let roots;
+    if (D >= 0 && s * s === D) {
+      const r1 = fr(-b + s, 2 * a), r2 = fr(-b - s, 2 * a);
+      roots = [r1, r2].sort((u, v) => u[0] / u[1] - v[0] / v[1]);
+      let f1 = lf(r1[1], r1[0]), f2 = lf(r2[1], r2[0]);
+      let body;
+      if (D === 0) body = (r1[0] === 0 && r1[1] === 1) ? "x**2" : "(" + f1 + ")**2";
+      else { const fs = [[r1[1], r1[0], f1], [r2[1], r2[0], f2]].sort((u, v) => u[0] - v[0] || -(u[1] - v[1]));
+        fs.sort((u, v) => ((v[1] === 0 && v[0] === 1) - (u[1] === 0 && u[0] === 1)));
+        body = fs.map(f => (f[1] === 0 && f[0] === 1) ? f[2] : "(" + f[2] + ")").join("*"); }
+      const lead = Math.abs(g) === 1 ? (g < 0 ? "-" : "") : (g < 0 ? "-" : "") + Math.abs(g) + "*";
+      fac = lead + body;
+      if (fac.startsWith("-") && /^-x/.test(fac)) fac = "-" + body;
+    } else if (g0 > 1) { fac = (g < 0 ? "-" : "") + (Math.abs(g) > 1 ? Math.abs(g) + "*" : "") + "(" + poly([[[A, 1], 2], [[B, 1], 1], [[C, 1], 0]]) + ")"; }
+    const sol = roots ? "[" + (D === 0 ? frStr(roots[0]) : roots.map(frStr).join(", ")) + "]"
+      : D >= 0 ? "irrational roots ≈ " + [(-b - Math.sqrt(D)) / (2 * a), (-b + Math.sqrt(D)) / (2 * a)].sort((u, v) => u - v).map(v => v.toFixed(4)).join(", ")
+      : "complex roots ≈ " + (-b / (2 * a)).toFixed(4) + " ± " + (Math.sqrt(-D) / (2 * Math.abs(a))).toFixed(4) + "*I";
+    const diff = poly([[[2 * a, 1], 1], [[b, 1], 0]]);
+    const integ = poly([[fr(a, 3), 3], [fr(b, 2), 2], [[c, 1], 1]]);
+    const val = a * x0 * x0 + b * x0 + c;
+    const defI = fr(a * 27 * 2 + b * 9 * 3, 6); // integral 0..3 = 9a + 9b/2 + 3c
+    const defV = fr(54 * a + 27 * b + 18 * c, 6);
+    const rows = [["expr", expr], ["sp.factor(expr)", fac], ["sp.solve(expr, x)", sol], ["expr.subs(x, " + x0 + ")", String(val)], ["sp.diff(expr, x)", diff], ["sp.integrate(expr, x)", integ], ["sp.integrate(expr, (x, 0, 3))", frStr(defV)]];
+    tbl.innerHTML = "<thead><tr><th>SymPy call</th><th>Result</th></tr></thead><tbody>" + rows.map(rw => "<tr><td>" + esc(rw[0]) + "</td><td>" + esc(rw[1]) + "</td></tr>").join("") + "</tbody>";
+  }
+  w.addEventListener("input", r); r();
+})();
+
+/* Dijkstra */
+(function () {
+  const w = $("#w-dij"); if (!w) return;
+  const P = { A: [70, 150], B: [230, 50], C: [230, 250], D: [390, 150], E: [500, 250] };
+  const E = [["A", "B", 3], ["A", "C", 5], ["B", "C", 7], ["B", "D", 9], ["C", "D", 2], ["C", "E", 8], ["D", "E", 3]];
+  const N = Object.keys(P);
+  K(w, "s").innerHTML = K(w, "t").innerHTML = N.map(n => "<option>" + n + "</option>").join(""); K(w, "t").value = "D";
+  K(w, "w").innerHTML = E.map((e, i) => "<span>" + e[0] + " → " + e[1] + '</span><input type="number" min="0" aria-label="weight ' + e[0] + " to " + e[1] + '" data-e="' + i + '" value="' + e[2] + '">').join("");
+  function r() {
+    $$("input", K(w, "w")).forEach(el => (E[+el.dataset.e][2] = Math.max(0, +el.value || 0)));
+    const s = K(w, "s").value, t = K(w, "t").value;
+    const dist = {}, prev = {}, seen = new Set(), order = []; N.forEach(n => (dist[n] = Infinity)); dist[s] = 0;
+    while (true) { let u = null; N.forEach(n => { if (!seen.has(n) && dist[n] < Infinity && (u === null || dist[n] < dist[u])) u = n; }); if (u === null) break;
+      seen.add(u); order.push(u + "(" + dist[u] + ")"); E.forEach(([a, b, wt]) => { if (a === u && dist[u] + wt < dist[b]) { dist[b] = dist[u] + wt; prev[b] = u; } }); }
+    const path = []; if (dist[t] < Infinity) { let c = t; while (c) { path.unshift(c); c = c === s ? null : prev[c]; } }
+    const onPath = (a, b) => { const i = path.indexOf(a); return i >= 0 && path[i + 1] === b; };
+    let h = '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--muted)"/></marker><marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--accent)"/></marker></defs>';
+    E.forEach(([a, b, wt]) => { const [x1, y1] = P[a], [x2, y2] = P[b], L = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L, uy = (y2 - y1) / L, on = onPath(a, b);
+      h += '<line x1="' + (x1 + ux * 24) + '" y1="' + (y1 + uy * 24) + '" x2="' + (x2 - ux * 26) + '" y2="' + (y2 - uy * 26) + '" stroke="' + (on ? "var(--accent)" : "var(--muted)") + '" stroke-width="' + (on ? 3.5 : 1.5) + '" marker-end="url(#' + (on ? "arg" : "ar") + ')"/>';
+      const mx = (x1 + x2) / 2 - uy * 14, my = (y1 + y2) / 2 + ux * 14;
+      h += '<text x="' + mx + '" y="' + (my + 4) + '" text-anchor="middle" font-size="14" font-weight="700" fill="' + (on ? "var(--accent)" : "var(--ink)") + '">' + wt + "</text>"; });
+    N.forEach(n => { const [x, y] = P[n], on = path.includes(n);
+      h += '<circle cx="' + x + '" cy="' + y + '" r="22" fill="' + (on ? "var(--accent)" : "var(--paper)") + '" stroke="' + (on ? "var(--accent)" : "var(--ink)") + '" stroke-width="1.5"/><text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" font-size="16" font-weight="700" fill="' + (on ? "var(--paper)" : "var(--ink)") + '">' + n + "</text>"; });
+    K(w, "svg").innerHTML = h;
+    K(w, "code").innerHTML = highlight('path = nx.dijkstra_path(G, "' + s + '", "' + t + '", weight="weight")\ndist = nx.dijkstra_path_length(G, "' + s + '", "' + t + '", weight="weight")\nprint("Shortest path :", path)\nprint("Total distance:", dist)');
+    const o = K(w, "out"); o.classList.toggle("err", !path.length);
+    o.textContent = path.length ? "Shortest path : [" + path.map(n => "'" + n + "'").join(", ") + "]\nTotal distance: " + dist[t] + "\n\n# visit order (distance when settled): " + order.join(", ")
+      : "NetworkXNoPath: No path to " + t + ".\n# Edges are directed; nothing leads from " + s + " to " + t + ".";
+  }
+  w.addEventListener("input", r); w.addEventListener("change", r); r();
+})();
+
+/* HDF5 tree */
+(function () {
+  const w = $("#w-h5"); if (!w) return;
+  const T = [
+    ["/", 0, "File root", "The root group. Every file has exactly one.", 'h5 = tb.open_file("college.h5", "r")\nroot = h5.root'],
+    ["/cse", 1, "Group", "A group works like a folder. It holds tables, arrays and other groups.", 'h5.root.cse\nh5.get_node("/cse")'],
+    ["/cse/students", 2, "Table", "Rows of records with typed columns: roll (Int32), name (String 16), cgpa (Float32).", 'tbl = h5.root.cse.students\nprint(tbl.nrows, tbl.colnames)\nfor r in tbl.where("cgpa > 8.5"):\n    print(r["name"].decode())'],
+    ["/cse/marks", 2, "Array", "A NumPy array stored on disk, sliced like an array without loading all of it.", "marks = h5.root.cse.marks\nprint(marks.shape)\nprint(marks[0:2])"],
+    ["/ece", 1, "Group", "A second group with the same layout, for another department.", "h5.root.ece"],
+    ["/ece/students", 2, "Table", "Same column description as /cse/students, so code that reads one reads the other.", 'for node in h5.walk_nodes("/", "Table"):\n    print(node._v_pathname, node.nrows)'],
+    ["title (attribute)", 1, "Attribute", "Small metadata attached to a node, such as a title, units or a creation date.", 'h5.root._v_attrs.TITLE\nh5.root.cse.students.attrs.units = "CGPA out of 10"']];
+  const tree = K(w, "tree");
+  tree.innerHTML = T.map((n, i) => '<button type="button" role="treeitem" aria-selected="' + (i === 2) + '" data-i="' + i + '" style="padding-left:' + (0.5 + n[1] * 1.1) + 'rem">' + esc(n[0].split("/").pop() || "/") + '<span class="kind">' + n[2] + "</span></button>").join("");
+  function sel(i) { $$("button", tree).forEach(b => b.setAttribute("aria-selected", b.dataset.i == i)); const n = T[i];
+    K(w, "info").innerHTML = "<h3>" + esc(n[0]) + "</h3><p>" + esc(n[3]) + '</p><pre class="codeline">' + highlight(n[4]) + "</pre>"; }
+  tree.addEventListener("click", e => { const b = e.target.closest("button"); if (b) sel(+b.dataset.i); }); sel(2);
+})();
+
+/* errors search */
+(function () {
+  const s = $("[data-errsearch]"); if (!s) return;
+  s.addEventListener("input", () => { const q = s.value.trim().toLowerCase(); let n = 0;
+    $$(".errors details").forEach(d => { const m = !q || d.textContent.toLowerCase().includes(q); d.hidden = !m; if (m) n++; });
+    $("[data-errnone]").hidden = n > 0; });
+})();
+
+/* quiz */
+(function () {
+  const box = $('#wrap-quiz [data-k="quiz"]'); if (!box) return;
+  const Q = [
+    ["What does np.arange(1, 13).reshape(3, -1) produce?", ["A 3 × 4 array", "A 4 × 3 array", "An error, because -1 is invalid", "A 3 × 12 array"], 0, "-1 tells NumPy to compute that dimension: 12 elements / 3 rows = 4 columns."],
+    ["marks.sum(axis=0) on a (students × subjects) array gives…", ["one total per student", "one total per subject", "the grand total", "the cumulative sum"], 1, "axis=0 runs down the rows, collapsing them, so one value remains per column (subject)."],
+    ["Which shape can be added to an array of shape (2, 3)?", ["(2,)", "(3, 2)", "(2, 1)", "(4, 3)"], 2, "Compared from the right: 1 broadcasts to 3 and 2 equals 2."],
+    ["With a default integer index, how many rows does df.iloc[1:3] return?", ["1", "2", "3", "4"], 1, "iloc is position-based and excludes the end: positions 1 and 2. df.loc[1:3] would return 3 rows."],
+    ["Which call stores a DataFrame using PyTables underneath?", ["df.to_parquet()", "df.to_hdf()", "df.to_json()", "df.to_excel()"], 1, "Pandas' HDF5 support is implemented with PyTables."],
+    ["A two-sample t-test gives p = 0.03 at α = 0.05. What do you conclude?", ["Accept H₀", "Reject H₀: the means differ significantly", "The test is invalid", "The means are exactly equal"], 1, "p is below α, so the data are unlikely under H₀ and we reject it."],
+    ["Why does sm.OLS(y, X) need sm.add_constant(X)?", ["To normalise X", "To add the intercept term", "To remove outliers", "To compute R²"], 1, "sm.OLS fits exactly the columns given. The constant column of ones lets it estimate an intercept."],
+    ["sp.sqrt(8) prints as…", ["2.8284271247461903", "2*sqrt(2)", "sqrt(8)", "2.83"], 1, "SymPy simplifies exactly instead of approximating; use .evalf() for a decimal."]];
+  let ans = store.get("quiz", {});
+  function r() {
+    box.innerHTML = Q.map((q, i) => '<div class="q"><p class="qt">' + (i + 1) + ". " + esc(q[0]) + '</p><div class="opts">' + q[1].map((o, j) => {
+      const a = ans[i]; const cls = a === undefined ? "" : j === q[2] ? "right" : j === a ? "wrong" : "";
+      return '<button type="button" data-q="' + i + '" data-o="' + j + '" class="' + cls + '"' + (a !== undefined ? " disabled" : "") + ">" + esc(o) + "</button>"; }).join("") + "</div>" + (ans[i] !== undefined ? '<p class="why">' + (ans[i] === q[2] ? "Correct. " : "Not quite. ") + esc(q[3]) + "</p>" : "") + "</div>").join("");
+    const n = Object.keys(ans).length, c = Object.entries(ans).filter(([i, a]) => Q[i][2] === a).length;
+    $('#wrap-quiz [data-k="score"]').textContent = n ? "Score: " + c + " of " + n + " answered" + (n === Q.length ? " (" + Math.round(c / Q.length * 100) + "%)" : "") : "";
+  }
+  box.addEventListener("click", e => { const b = e.target.closest("button[data-q]"); if (!b) return; ans[b.dataset.q] = +b.dataset.o; store.set("quiz", ans); r(); });
+  $("[data-clear]").addEventListener("click", () => { store.clear(); ans = {}; doneSet.clear(); r(); show(cur); });
+  r();
+})();
+
+/* start */
+const h = location.hash.slice(1); show(Math.max(0, ids.indexOf(h)), false);
+window.addEventListener("hashchange", () => { const i = ids.indexOf(location.hash.slice(1)); if (i >= 0 && i !== cur) show(i, false); });
+})();
+</script>
+</body>
+</html>
